@@ -1,5 +1,5 @@
 # siudemka
-## Sample Project for the RZUF3 Framework
+## Sample project for the RZUF3 framework
 
 This app displays a prerendered locomotive model loaded from a tilemap set using the SGE (Siudemka Graphics Engine) module. You can interact with the model using some of the built-in RZUF functionalities. Just download and try it out yourself.
 
