@@ -3,7 +3,7 @@
 
 This app displays a prerendered locomotive model loaded from a tilemap set using the SGE (Siudemka Graphics Engine) module. You can interact with the model using some of the built-in RZUF functionalities. Just download and try it out yourself.
 
-### Repository
+### RZUF3
 You can find the framework repository [here](https://github.com/izawartka/rzuf3).
 
 ### Binaries
