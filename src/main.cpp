@@ -12,6 +12,7 @@ int SDL_main(int argc, char* argv[]) {
 
     game = new RZUF3_Game();
     game->initWindow("siudemka", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 384, 528, false);
+    game->setWindowIcon("assets/icon.png");
 
     RZUF3_SceneDefinition* sceneDef = MainScene::getSceneDef();
 

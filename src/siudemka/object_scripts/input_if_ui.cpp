@@ -1,6 +1,6 @@
-#include "input_if_ui_equals.h"
+#include "input_if_ui.h"
 
-InputIfUIEquals::InputIfUIEquals(std::string targetObjectName, int condition, uint16_t inputIndex, uint8_t valueIfTrue)
+InputIfUI::InputIfUI(std::string targetObjectName, int condition, uint16_t inputIndex, uint8_t valueIfTrue)
 {
 	mp_targetObjectName = targetObjectName;
 	mp_condition = condition;
@@ -8,12 +8,12 @@ InputIfUIEquals::InputIfUIEquals(std::string targetObjectName, int condition, ui
 	mp_valueIfTrue = valueIfTrue;
 }
 
-InputIfUIEquals::~InputIfUIEquals()
+InputIfUI::~InputIfUI()
 {
 
 }
 
-void InputIfUIEquals::init()
+void InputIfUI::init()
 {
 	setTargetObject(mp_targetObjectName);
 	m_inputIndex = mp_inputIndex;
@@ -24,25 +24,25 @@ void InputIfUIEquals::init()
 	_ADD_LISTENER(m_objectEventsManager, UIValueChange);
 }
 
-void InputIfUIEquals::deinit()
+void InputIfUI::deinit()
 {
 	_REMOVE_LISTENER(m_objectEventsManager, UIValueChange);
 }
 
-void InputIfUIEquals::setTargetObject(std::string targetObjectName)
+void InputIfUI::setTargetObject(std::string targetObjectName)
 {
 	m_targetEventsManager = nullptr;
 	m_targetObjectName = targetObjectName;
 	RZUF3_Object* targetObject = getObject()->getScene()->getObject(m_targetObjectName);
 	if (targetObject == nullptr)
 	{
-		spdlog::error("InputIfUIEquals target object not found: {}", m_targetObjectName);
+		spdlog::error("InputIfUI target object not found: {}", m_targetObjectName);
 		return;
 	}
 	m_targetEventsManager = targetObject->getEventsManager();
 }
 
-void InputIfUIEquals::onUIValueChange(RZUF3_UIValueChangeEvent* event)
+void InputIfUI::onUIValueChange(RZUF3_UIValueChangeEvent* event)
 {
 	if (m_targetEventsManager == nullptr) return;
 

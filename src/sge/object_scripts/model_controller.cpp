@@ -192,7 +192,13 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
 
 	if (submodel->conditionInputIndex != 0) {
 		uint8_t conditionInputValue = getInput(submodel->conditionInputIndex);
-		if (conditionInputValue != submodel->conditionValue) return;
+
+		if (submodel->conditionValue == 255) {
+			submodelRenderer->setOpacity(conditionInputValue);
+		}
+		else if (submodel->conditionValue != conditionInputValue) {
+			return;
+		}
 	}
 
 	uint16_t index = getInput(submodel->indexByInputIndex);

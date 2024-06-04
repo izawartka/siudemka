@@ -11,6 +11,7 @@ struct SGE_TextureSetRendererOptions {
 	int y = 0;
 	uint8_t index = 0;
 	bool userDrawOnly = false;
+	uint8_t opacity = 255;
 
 };
 
@@ -30,6 +31,7 @@ public:
 	void setDstPos(int x, int y);
 	void setIndex(uint8_t index, bool force = false);
 	void setUserDrawOnly(bool userDrawOnly) { m_userDrawOnly = userDrawOnly; }
+	void setOpacity(uint8_t opacity) { m_opacity = opacity; }
 
 protected:
 	void onDraw(RZUF3_DrawEvent* event);
@@ -47,8 +49,9 @@ protected:
 	int m_y = 0;
 	uint8_t m_index = 0;
 	bool m_userDrawOnly = false;
-	RZUF3_Renderer* m_renderer = nullptr;
+	uint8_t m_opacity = 255;
 
+	RZUF3_Renderer* m_renderer = nullptr;
 	std::map<uint8_t, SGE_BMD_TextureDef*> m_textureDefs;
 	SGE_BMD_TextureDef* m_textureDef = nullptr;
 

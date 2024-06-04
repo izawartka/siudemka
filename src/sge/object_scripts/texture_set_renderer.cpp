@@ -25,6 +25,8 @@ void SGE_TextureSetRenderer::init()
 	m_y = mp_options.y;
 	m_index = mp_options.index;
 	m_userDrawOnly = mp_options.userDrawOnly;
+	m_opacity = mp_options.opacity;
+
 	m_renderer = getObject()->getScene()->getRenderer();
 
 	updateTexture();
@@ -48,6 +50,7 @@ void SGE_TextureSetRenderer::userDraw()
 	if (m_object == nullptr) return;
 	if (m_texture == nullptr) return;
 	if (m_textureDef == nullptr) return;
+	if (m_opacity == 0) return;
 
 	SDL_Rect srcRect = {
 		m_textureDef->srcX,
@@ -63,7 +66,12 @@ void SGE_TextureSetRenderer::userDraw()
 		m_textureDef->height
 	};
 
-	m_renderer->drawTexture(m_object, m_texture, &srcRect, dstRect);
+	if (m_opacity != 255) {
+		m_renderer->drawTextureOpaque(m_object, m_texture, &srcRect, dstRect, m_opacity);
+	}
+	else {
+		m_renderer->drawTexture(m_object, m_texture, &srcRect, dstRect);
+	}
 }
 
 void SGE_TextureSetRenderer::setFilepath(std::string filepath)
