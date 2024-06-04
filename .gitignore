@@ -30,7 +30,7 @@
 *.exe
 *.out
 *.app
+
 /.vs
 bin/siudemka.pdb
 /out
-src/rzuf3/
