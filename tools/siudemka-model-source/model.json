@@ -1,0 +1,260 @@
+{
+    "info": {
+        "name": "siudemka"
+    },    
+    "tilemaps": [
+        {
+            "_index": 0,
+            "name": "base",
+            "baseImage": "tmap_base.png",
+            "infoFile": "tmap_base.txt"
+        },
+        {
+            "_index": 1,
+            "name": "lights",
+            "baseImage": "tmap_lights.png",
+            "infoFile": "tmap_lights.txt"
+        },
+        {
+            "_index": 2,
+            "name": "chassis",
+            "baseImage": "tmap_chassis.png",
+            "infoFile": "tmap_chassis.txt"
+        },
+        {
+            "_index": 3,
+            "name": "bogie",
+            "baseImage": "tmap_bogie.png",
+            "infoFile": "tmap_bogie.txt"
+        },
+        {
+            "_index": 4,
+            "name": "pant",
+            "baseImage": "tmap_pant.png",
+            "infoFile": "tmap_pant.txt"
+        },
+        {
+            "_index": 5,
+            "name": "coupler",
+            "baseImage": "tmap_coupler.png",
+            "infoFile": "tmap_coupler.txt"
+        }
+    ],
+    "submodels": {
+        "base": {
+            "tilemap": "base",
+            "tileset": "base",
+            "range": 60
+        },
+        "roofelems": {
+            "tilemap": "base",
+            "tileset": "roofelems",
+            "range": 120
+        },
+        "antenna": {
+            "tilemap": "base",
+            "tileset": "antenna",
+            "range": 120
+        },
+        "light_f_r": {
+            "tilemap": "lights",
+            "tileset": "light_r",
+            "condition": "light_f_r",
+            "condition_value": 255,
+            "range": 60
+        },
+        "light_f_l": {
+            "tilemap": "lights",
+            "tileset": "light_l",
+            "condition": "light_f_l",
+            "condition_value": 255,
+            "range": 60
+        },
+        "light_f_t": {
+            "tilemap": "lights",
+            "tileset": "light_t",
+            "condition": "light_f_t",
+            "condition_value": 255,
+            "range": 60
+        },
+        "light_r_r": {
+            "tilemap": "lights",
+            "tileset": "light_r",
+            "condition": "light_r_r",
+            "condition_value": 255,
+            "range": 60
+        },
+        "light_r_l": {
+            "tilemap": "lights",
+            "tileset": "light_l",
+            "condition": "light_r_l",
+            "condition_value": 255,
+            "range": 60
+        },
+        "light_r_t": {
+            "tilemap": "lights",
+            "tileset": "light_t",
+            "condition": "light_r_t",
+            "condition_value": 255,
+            "range": 60
+        },
+        "signal_r_r": {
+            "tilemap": "lights",
+            "tileset": "signal_r",
+            "condition": "signal_r_r",
+            "condition_value": 255,
+            "range": 60
+        },
+        "signal_r_l": {
+            "tilemap": "lights",
+            "tileset": "signal_l",
+            "condition": "signal_r_l",
+            "condition_value": 255,
+            "range": 60
+        },
+        "signal_f_r": {
+            "tilemap": "lights",
+            "tileset": "signal_r",
+            "condition": "signal_f_r",
+            "condition_value": 255,
+            "range": 60
+        },
+        "signal_f_l": {
+            "tilemap": "lights",
+            "tileset": "signal_l",
+            "condition": "signal_f_l",
+            "condition_value": 255,
+            "range": 60
+        },
+        "chassis_f": {
+            "tilemap": "chassis",
+            "tileset": "chassis",
+            "range": 120
+        },
+        "chassis_m": {
+            "tilemap": "chassis",
+            "tileset": "chassis_m",
+            "range": 60
+        },
+        "chassis_r": {
+            "tilemap": "chassis",
+            "tileset": "chassis",
+            "range": 120,
+            "index_offset": 60
+        },
+        "bogie_f": {
+            "tilemap": "bogie",
+            "tileset": "bogie",
+            "range": 120,
+            "index_by": "rot_bogie_f",
+            "rot_by": "rot_base",
+            "pos_y": -96.1554
+        },
+        "bogie_r": {
+            "tilemap": "bogie",
+            "tileset": "bogie",
+            "range": 120,
+            "index_by": "rot_bogie_r",
+            "index_offset": 60,
+            "rot_by": "rot_base",
+            "pos_y": 96.1554
+        },
+        "pantbase_f": {
+            "tilemap": "pant",
+            "tileset": "pantbase",
+            "range": 120,
+            "rot_by": "rot_base",
+            "pos_y": -76.9807
+        },
+        "pantbase_r": {
+            "tilemap": "pant",
+            "tileset": "pantbase",
+            "range": 120,
+            "rot_by": "rot_base",
+            "pos_y": 76.9807
+        },
+        "pant_f_{}": {
+            "series_size": 7,
+            "series_start": 0,
+            "tilemap": "pant",
+            "tileset": "pant_{}",
+            "range": 60,
+            "condition": "pant_f",
+            "condition_value": "{}",
+            "rot_by": "rot_base",
+            "pos_y": -76.9807
+        },
+        "pant_r_{}": {
+            "series_size": 7,
+            "series_start": 0,
+            "tilemap": "pant",
+            "tileset": "pant_{}",
+            "range": 60,
+            "condition": "pant_r",
+            "condition_value": "{}",
+            "rot_by": "rot_base",
+            "pos_y": 76.9807
+        },
+        "coupler_f": {
+            "tilemap": "coupler",
+            "tileset": "coupler_off",
+            "range": 120
+        },
+        "coupler_r": {
+            "tilemap": "coupler",
+            "tileset": "coupler_off",
+            "range": 120,
+            "index_offset": 60
+        }
+    },
+    "views": [
+        {
+            "_range": "0 - 59",
+            "submodels": [
+                "chassis_r",
+                "coupler_r",
+                "bogie_r",
+                "chassis_m",
+                "bogie_f",
+                "chassis_f",
+                "coupler_f",
+                "base",
+                "pantbase_r",
+                "pant_r_{}",
+                "roofelems",
+                "pantbase_f",
+                "pant_f_{}",
+                "antenna",
+                "light_f_r",
+                "light_f_l",
+                "light_f_t",
+                "signal_f_r",
+                "signal_f_l"
+            ]
+        },
+        {
+            "_range": "60 - 119",
+            "submodels": [
+                "chassis_f",
+                "coupler_f",
+                "bogie_f",
+                "chassis_m",
+                "bogie_r",
+                "chassis_r",
+                "coupler_r",
+                "base",
+                "antenna",
+                "pantbase_f",
+                "pant_f_{}",
+                "roofelems",
+                "pantbase_r",
+                "pant_r_{}",
+                "light_r_r",
+                "light_r_l",
+                "light_r_t",
+                "signal_r_r",
+                "signal_r_l"
+            ]
+        }
+    ]
+}
