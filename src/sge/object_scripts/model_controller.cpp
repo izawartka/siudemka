@@ -49,6 +49,7 @@ void SGE_ModelController::setFilepath(std::string filepath)
 bool SGE_ModelController::setInput(uint16_t index, uint8_t value)
 {
 	if (m_bmdFile == nullptr) return false;
+	if (index == 0xFFFF) return true;
 
 	if (index > m_bmdFile->info.inputsCount) {
 		spdlog::error(

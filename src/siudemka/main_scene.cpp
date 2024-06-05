@@ -76,7 +76,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objPantographASlider.pos = RZUF3_Pos(16 + 96, 376);
     objPantographASlider.scripts = {
 		new RZUF3_Slider(0, 1, 0),
-		new InputIfUI("siudemka", 1, 13, 1),
+		new InputIfUISoft("siudemka", 1, 13, 6, 0.001),
         new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "pantograf A", -96, -3})
 	};
     m_sceneDef->objects.push_back(objPantographASlider);
@@ -87,7 +87,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objPantographBSlider.pos = RZUF3_Pos(16 + 96 + 203, 376);
     objPantographBSlider.scripts = {
         new RZUF3_Slider(0, 1, 0),
-        new InputIfUI("siudemka", 1, 14, 1),
+        new InputIfUISoft("siudemka", 1, 14, 6, 0.001),
         new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "pantograf B", -96, -3})
     };
     m_sceneDef->objects.push_back(objPantographBSlider);
