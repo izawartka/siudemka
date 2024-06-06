@@ -7,7 +7,7 @@ RZUF3_Game* game = nullptr;
 #ifndef _DEBUG
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #endif
-int SDL_main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
     spdlog::set_level(spdlog::level::debug);
 
     game = new RZUF3_Game();

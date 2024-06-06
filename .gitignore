@@ -33,4 +33,9 @@
 
 /.vs
 bin/siudemka.pdb
+bin/siudemka
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
 /out
