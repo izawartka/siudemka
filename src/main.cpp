@@ -17,6 +17,10 @@ int main(int argc, char* argv[]) {
     RZUF3_SceneDefinition* sceneDef = MainScene::getSceneDef();
 
     game->setScene(sceneDef);
+#ifdef _DEBUG 
+    // reload the scene to ensure all ObjectScripts are deinitialized correctly
+    game->setScene(sceneDef);
+#endif
     game->startGameLoop();
 
     delete game;

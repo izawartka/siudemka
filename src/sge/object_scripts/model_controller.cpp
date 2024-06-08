@@ -14,9 +14,9 @@ SGE_ModelController::~SGE_ModelController()
 
 void SGE_ModelController::init()
 {
-	m_bmdFile = nullptr;
 	m_bmdFilepath = mp_bmdFilepath;
 	m_assetsDirpath = mp_assetsDirpath;
+
 	updateModelDef();
 	addSubmodelControllers();
 
@@ -28,13 +28,15 @@ void SGE_ModelController::init()
 
 void SGE_ModelController::deinit()
 {
-	removeModelDef();
-	removeSubmodelControllers();
-
 	RZUF3_EventsManager* eventsManager = this->m_object->getScene()->getEventsManager();
 	_REMOVE_LISTENER(eventsManager, Draw);
 	RZUF3_EventsManager* objEventsManager = this->m_object->getEventsManager();
 	_REMOVE_LISTENER_CL(objEventsManager, SetModelInput, SGE);
+
+	removeModelDef();
+	removeSubmodelControllers();
+
+	m_bmdFile = nullptr;
 }
 
 void SGE_ModelController::setFilepath(std::string filepath)

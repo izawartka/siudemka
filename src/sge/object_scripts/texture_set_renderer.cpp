@@ -19,7 +19,6 @@ SGE_TextureSetRenderer::~SGE_TextureSetRenderer()
 void SGE_TextureSetRenderer::init()
 {
 	m_textureFilepath = mp_options.filepath;
-	m_texture = nullptr;
 	m_setDef = mp_options.setDef;
 	m_x = mp_options.x;
 	m_y = mp_options.y;
@@ -39,10 +38,14 @@ void SGE_TextureSetRenderer::init()
 
 void SGE_TextureSetRenderer::deinit()
 {
-	removeTexture();
-
 	RZUF3_EventsManager* eventsManager = getObject()->getScene()->getEventsManager();
 	_REMOVE_LISTENER(eventsManager, Draw);
+
+	removeTexture();
+
+	m_textureDefs.clear();
+	m_textureDef = nullptr;
+	m_renderer = nullptr;
 }
 
 void SGE_TextureSetRenderer::userDraw()

@@ -14,10 +14,11 @@ InputByUI::~InputByUI()
 
 void InputByUI::init()
 {
-	setTargetObject(mp_targetObjectName);
 	m_inputIndex = mp_inputIndex;
-	m_objectEventsManager = getObject()->getEventsManager();
 	m_range = mp_range;
+	setTargetObject(mp_targetObjectName);
+
+	m_objectEventsManager = m_object->getEventsManager();
 
 	_ADD_LISTENER(m_objectEventsManager, UIValueChange);
 }
@@ -25,13 +26,15 @@ void InputByUI::init()
 void InputByUI::deinit()
 {
 	_REMOVE_LISTENER(m_objectEventsManager, UIValueChange);
+
+	m_objectEventsManager = nullptr;
 }
 
 void InputByUI::setTargetObject(std::string targetObjectName)
 {
 	m_targetEventsManager = nullptr;
 	m_targetObjectName = targetObjectName;
-	RZUF3_Object* targetObject = getObject()->getScene()->getObject(m_targetObjectName);
+	RZUF3_Object* targetObject = m_object->getScene()->getObject(m_targetObjectName);
 	if (targetObject == nullptr)
 	{
 		spdlog::error("InputByUI target object not found: {}", m_targetObjectName);

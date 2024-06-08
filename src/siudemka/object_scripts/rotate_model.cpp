@@ -15,10 +15,6 @@ void RotateModel::init()
 {
 	m_rotInputIndex = mp_rotInputIndex;
 	m_doAutorotate = mp_doAutorotate;
-	m_isAccSet = false;
-
-	m_angle = 0;
-	m_speed = AUTOROTATE_SPEED;
 
 	RZUF3_EventsManager* eventsManager = getObject()->getScene()->getEventsManager();
 	_ADD_LISTENER(eventsManager, Update);
@@ -33,6 +29,11 @@ void RotateModel::deinit()
 	_REMOVE_LISTENER(eventsManager, Update);
 	_REMOVE_LISTENER_CL(m_objectEventsManager, SetAutorotate, User);
 	_REMOVE_LISTENER_CL(m_objectEventsManager, SetRotAcceleration, User);
+	m_objectEventsManager = nullptr;
+
+	m_isAccSet = false;
+	m_angle = 0;
+	m_speed = AUTOROTATE_SPEED;
 }
 
 void RotateModel::onSetAutorotate(User_SetAutorotateEvent* event)

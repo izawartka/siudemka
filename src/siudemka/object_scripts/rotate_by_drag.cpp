@@ -11,26 +11,25 @@ RotateByDrag::~RotateByDrag()
 
 void RotateByDrag::init()
 {
-	RZUF3_Object* obj = getObject();
-
 	m_clickable = new RZUF3_Clickable(mp_rect);
-	obj->addScript(m_clickable);
+	m_object->addScript(m_clickable);
+
 	m_clickable->setOnHoverCursor(SDL_SYSTEM_CURSOR_SIZEWE);
 
-	m_objectEventsManager = obj->getEventsManager();
+	m_objectEventsManager = m_object->getEventsManager();
 	_ADD_LISTENER(m_objectEventsManager, MouseDown)
 	_ADD_LISTENER(m_objectEventsManager, MousePressed);
 }
 
 void RotateByDrag::deinit()
 {
-	RZUF3_Object* obj = getObject();
-
-	obj->removeScript(m_clickable);
-	delete m_clickable;
-
 	_REMOVE_LISTENER(m_objectEventsManager, MouseDown);
 	_REMOVE_LISTENER(m_objectEventsManager, MousePressed);
+	m_objectEventsManager = nullptr;
+
+	m_object->removeScript(m_clickable);
+	delete m_clickable;
+	m_clickable = nullptr;
 }
 
 void RotateByDrag::setRect(SDL_Rect rect)

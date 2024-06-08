@@ -23,6 +23,8 @@ void AutorotateByCheckbox::deinit()
 {
 	RZUF3_EventsManager* objectEventsManager = getObject()->getEventsManager();
 	_REMOVE_LISTENER(objectEventsManager, UIValueChange);
+
+	m_targetEventsManager = nullptr;
 }
 
 void AutorotateByCheckbox::setTargetObject(std::string targetObjectName)

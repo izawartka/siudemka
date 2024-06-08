@@ -15,11 +15,12 @@ InputIfUI::~InputIfUI()
 
 void InputIfUI::init()
 {
-	setTargetObject(mp_targetObjectName);
 	m_inputIndex = mp_inputIndex;
 	m_condition = mp_condition;
 	m_valueIfTrue = mp_valueIfTrue;
-	m_objectEventsManager = getObject()->getEventsManager();
+	setTargetObject(mp_targetObjectName);
+
+	m_objectEventsManager = m_object->getEventsManager();
 
 	_ADD_LISTENER(m_objectEventsManager, UIValueChange);
 }
@@ -27,13 +28,15 @@ void InputIfUI::init()
 void InputIfUI::deinit()
 {
 	_REMOVE_LISTENER(m_objectEventsManager, UIValueChange);
+
+	m_objectEventsManager = nullptr;
 }
 
 void InputIfUI::setTargetObject(std::string targetObjectName)
 {
 	m_targetEventsManager = nullptr;
 	m_targetObjectName = targetObjectName;
-	RZUF3_Object* targetObject = getObject()->getScene()->getObject(m_targetObjectName);
+	RZUF3_Object* targetObject = m_object->getScene()->getObject(m_targetObjectName);
 	if (targetObject == nullptr)
 	{
 		spdlog::error("InputIfUI target object not found: {}", m_targetObjectName);
