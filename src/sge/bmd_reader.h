@@ -7,6 +7,8 @@ public:
 	static bool readFile(std::ifstream& file, SGE_BMD_File& bmdFile);
 
 	static bool readInfoBlock(std::ifstream& file, SGE_BMD_InfoBlock& infoBlock);
+	static bool readInputsBlock(std::ifstream& file, SGE_BMD_InputsBlock& inputsBlock);
+	static bool readInputDef(std::ifstream& file, SGE_BMD_InputDef& inputDef);
 	static bool readAtlasesBlock(std::ifstream& file, SGE_BMD_AtlasesBlock& tilemapsBlock);
 	static bool readAtlasDef(std::ifstream& file, SGE_BMD_AtlasDef& tilemapDef);
 	static bool readTextureSetsBlock(std::ifstream& file, SGE_BMD_TextureSetsBlock& tileSetsBlock);

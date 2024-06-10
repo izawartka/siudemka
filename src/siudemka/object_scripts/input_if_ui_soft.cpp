@@ -1,10 +1,10 @@
 #include "input_if_ui_soft.h"
 
-InputIfUISoft::InputIfUISoft(std::string targetObjectName, int condition, uint16_t inputIndex, uint8_t targetValue, double step)
+InputIfUISoft::InputIfUISoft(std::string targetObjectName, std::string inputName, int condition, uint8_t targetValue, double step)
 {
 	mp_targetObjectName = targetObjectName;
+	mp_inputName = inputName;
 	mp_condition = condition;
-	mp_inputIndex = inputIndex;
 	mp_targetValue = targetValue;
 	mp_step = step;
 }
@@ -16,7 +16,7 @@ InputIfUISoft::~InputIfUISoft()
 
 void InputIfUISoft::init()
 {
-	m_inputIndex = mp_inputIndex;
+	m_inputName = mp_inputName;
 	m_condition = mp_condition;
 	m_targetValue = mp_targetValue;
 	m_step = mp_step;
@@ -71,6 +71,6 @@ void InputIfUISoft::onUpdate(RZUF3_UpdateEvent* event)
 	if (m_currentValue < 0) m_currentValue = 0;
 	if (m_currentValue > m_targetValue) m_currentValue = m_targetValue;
 
-	SGE_SetModelInputEvent* setModelInputEvent = new SGE_SetModelInputEvent(m_inputIndex, m_currentValue);
+	SGE_SetModelInputEvent* setModelInputEvent = new SGE_SetModelInputEvent(m_inputName, m_currentValue);
 	m_targetEventsManager->dispatchEvent(setModelInputEvent);
 }

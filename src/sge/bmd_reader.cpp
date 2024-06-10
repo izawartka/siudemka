@@ -22,6 +22,11 @@ bool SGE_BMD_Reader::readFile(std::ifstream& file, SGE_BMD_File& bmdFile) {
     _READ_STR(bmdFile.header, 6);
     _READ(bmdFile.size);
 
+    if (strcmp(bmdFile.header, "SGEBMD") != 0) {
+		spdlog::error("BMD file: invalid header");
+		return false;
+	}
+
     uint32_t currentPos = 10;
 
     while (currentPos < bmdFile.size) {
@@ -30,12 +35,15 @@ bool SGE_BMD_Reader::readFile(std::ifstream& file, SGE_BMD_File& bmdFile) {
         uint32_t blockSize = 0; 
         _READ(blockSize);
 
-        if(strcmp(header, "INFO") == 0) {
-			readInfoBlock(file, bmdFile.info);
-            if(bmdFile.info.version != 3) {
-				spdlog::error("BMD file {}: unsupported version {}", bmdFile.info.name, bmdFile.info.version);
-				return false;
-			}
+        if (strcmp(header, "INFO") == 0) {
+            readInfoBlock(file, bmdFile.info);
+            if (bmdFile.info.version != SGE_BMD_VERSION) {
+                spdlog::error("BMD file {}: unsupported version {}", bmdFile.info.name, bmdFile.info.version);
+                return false;
+            }
+        }
+        else if (strcmp(header, "INPT") == 0) {
+            readInputsBlock(file, bmdFile.inputs);
 		} else if(strcmp(header, "TATL") == 0) {
 			readAtlasesBlock(file, bmdFile.atlases);
         } else if(strcmp(header, "TSET") == 0) {
@@ -63,11 +71,29 @@ bool SGE_BMD_Reader::readFile(std::ifstream& file, SGE_BMD_File& bmdFile) {
 
 bool SGE_BMD_Reader::readInfoBlock(std::ifstream& file, SGE_BMD_InfoBlock& infoBlock) {
     _READ(infoBlock.version);
-    _READ(infoBlock.inputsCount);
     _READ(infoBlock.nameLength);
     _READ_STR(infoBlock.name, infoBlock.nameLength);
 
     return true;
+}
+
+bool SGE_BMD_Reader::readInputsBlock(std::ifstream& file, SGE_BMD_InputsBlock& inputsBlock) {
+	_READ(inputsBlock.inputsCount);
+	inputsBlock.inputs = new SGE_BMD_InputDef[inputsBlock.inputsCount];
+
+    for (int i = 0; i < inputsBlock.inputsCount; ++i) {
+		readInputDef(file, inputsBlock.inputs[i]);
+	}
+
+	return true;
+}
+
+bool SGE_BMD_Reader::readInputDef(std::ifstream& file, SGE_BMD_InputDef& inputDef)
+{
+    _READ(inputDef.nameLength);
+	_READ_STR(inputDef.name, inputDef.nameLength);
+
+	return true;
 }
 
 bool SGE_BMD_Reader::readAtlasesBlock(std::ifstream& file, SGE_BMD_AtlasesBlock& tilemapsBlock) {

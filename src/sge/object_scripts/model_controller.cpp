@@ -53,7 +53,7 @@ bool SGE_ModelController::setInput(uint16_t index, uint8_t value)
 	if (m_bmdFile == nullptr) return false;
 	if (index == 0xFFFF) return true;
 
-	if (index > m_bmdFile->info.inputsCount) {
+	if (index > m_bmdFile->inputs.inputsCount) {
 		spdlog::error(
 			"Input #{} does not exist in the model {}",
 			index,
@@ -68,16 +68,38 @@ bool SGE_ModelController::setInput(uint16_t index, uint8_t value)
 	return true;
 }
 
+bool SGE_ModelController::setInput(std::string name, uint8_t value)
+{
+	if (m_bmdFile == nullptr) return false;
+	if (name.empty()) return false;
+
+	auto it = m_inputNames.find(name);
+	if (it == m_inputNames.end()) {
+		spdlog::error(
+			"Input {} does not exist in the model {}",
+			name,
+			m_bmdFile->info.name
+		);
+
+		return false;
+	}
+
+	uint16_t index = it->second;
+	m_inputs[index] = value;
+
+	return true;
+}
+
 uint8_t SGE_ModelController::getInput(uint16_t index)
 {
 	if (m_bmdFile == nullptr) return 0;
 	if (index == 0xFFFF) return 0;
 
-	if (index > m_bmdFile->info.inputsCount) {
+	if (index > m_bmdFile->inputs.inputsCount) {
 		spdlog::error(
 			"Input #{} does not exist in the model {}",
 			index,
-			m_bmdFilepath
+			m_bmdFile->info.name
 		);
 
 		return 0;
@@ -93,17 +115,17 @@ void SGE_ModelController::onDraw(RZUF3_DrawEvent* event)
 
 void SGE_ModelController::onSetModelInput(SGE_SetModelInputEvent* event)
 {
-	setInput(event->getIndex(), event->getValue());
+	setInput(event->getName(), event->getValue());
 }
 
 void SGE_ModelController::removeModelDef()
 {
 	if (m_bmdFile == nullptr) return;
 
-	RZUF3_AssetsManager* assetsManager = this->m_object->getScene()->getAssetsManager();
-
 	delete[] m_inputs;
+	m_inputNames.clear();
 
+	RZUF3_AssetsManager* assetsManager = this->m_object->getScene()->getAssetsManager();
 	assetsManager->removeAsset(m_bmdFilepath);
 	m_bmdFile = nullptr;
 }
@@ -131,7 +153,13 @@ void SGE_ModelController::updateModelDef()
 		return;
 	}
 
-	m_inputs = new uint8_t[this->m_bmdFile->info.inputsCount]{ 0 };
+	m_inputs = new uint8_t[this->m_bmdFile->inputs.inputsCount]{ 0 };
+
+	for (int i = 0; i < this->m_bmdFile->inputs.inputsCount; i++)
+	{
+		SGE_BMD_InputDef* input = &this->m_bmdFile->inputs.inputs[i];
+		m_inputNames.insert(std::pair<std::string, uint16_t>(input->name, i));
+	}
 }
 
 void SGE_ModelController::removeSubmodelControllers()
@@ -213,13 +241,13 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
 
 	submodelRenderer->setIndex((uint8_t)index);
 
-	double rotRad = -rot * M_PI / 60.0;
-	double x = submodel->x * sin(rotRad) - submodel->y * cos(rotRad);
-	double y = submodel->x * cos(rotRad) + submodel->y * sin(rotRad);
+	double rotRad = rot * M_PI / 60.0;
+	double x = submodel->y * cos(rotRad) - submodel->x * sin(rotRad);
+	double y = submodel->y * sin(rotRad) + submodel->x * cos(rotRad);
 
 	submodelRenderer->setDstPos(
-		x / 20000,
-		y * yScale / 20000
+		x / SGE_BMD_FLOAT_SCALE,
+		y * yScale / SGE_BMD_FLOAT_SCALE
 	);
 	submodelRenderer->userDraw();
 }

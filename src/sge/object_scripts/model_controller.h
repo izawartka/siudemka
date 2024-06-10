@@ -16,6 +16,7 @@ public:
 
 	void setFilepath(std::string filepath);
 	bool setInput(uint16_t index, uint8_t value);
+	bool setInput(std::string name, uint8_t value);
 	uint8_t getInput(uint16_t index);
 
 protected:
@@ -36,6 +37,7 @@ protected:
 	std::string m_assetsDirpath;
 	SGE_BMD_File* m_bmdFile = nullptr;
 	uint8_t* m_inputs = nullptr;
+	std::map<std::string, uint16_t> m_inputNames;
 	std::vector<SGE_TextureSetRenderer*> m_submodelRenderers;
 
 	double m_angle = 0.0;

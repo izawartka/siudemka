@@ -4,40 +4,39 @@
     },    
     "tilemaps": [
         {
-            "_index": 0,
             "name": "base",
             "baseImage": "tmap_base.png",
             "infoFile": "tmap_base.txt"
         },
         {
-            "_index": 1,
             "name": "lights",
             "baseImage": "tmap_lights.png",
             "infoFile": "tmap_lights.txt"
         },
         {
-            "_index": 2,
             "name": "chassis",
             "baseImage": "tmap_chassis.png",
             "infoFile": "tmap_chassis.txt"
         },
         {
-            "_index": 3,
             "name": "bogie",
             "baseImage": "tmap_bogie.png",
             "infoFile": "tmap_bogie.txt"
         },
         {
-            "_index": 4,
             "name": "pant",
             "baseImage": "tmap_pant.png",
             "infoFile": "tmap_pant.txt"
         },
         {
-            "_index": 5,
             "name": "coupler",
             "baseImage": "tmap_coupler.png",
             "infoFile": "tmap_coupler.txt"
+        },
+        {
+            "name": "door",
+            "baseImage": "tmap_door.png",
+            "infoFile": "tmap_door.txt"
         }
     ],
     "submodels": {
@@ -148,7 +147,7 @@
             "range": 120,
             "index_by": "rot_bogie_f",
             "rot_by": "rot_base",
-            "pos_y": -96.1554
+            "pos_y": 96.1554
         },
         "bogie_r": {
             "tilemap": "bogie",
@@ -157,21 +156,21 @@
             "index_by": "rot_bogie_r",
             "index_offset": 60,
             "rot_by": "rot_base",
-            "pos_y": 96.1554
+            "pos_y": -96.1554
         },
         "pantbase_f": {
             "tilemap": "pant",
             "tileset": "pantbase",
             "range": 120,
             "rot_by": "rot_base",
-            "pos_y": -76.9807
+            "pos_y": 76.9807
         },
         "pantbase_r": {
             "tilemap": "pant",
             "tileset": "pantbase",
             "range": 120,
             "rot_by": "rot_base",
-            "pos_y": 76.9807
+            "pos_y": -76.9807
         },
         "pant_f_{}": {
             "series_size": 7,
@@ -182,7 +181,7 @@
             "condition": "pant_f",
             "condition_value": "{}",
             "rot_by": "rot_base",
-            "pos_y": -76.9807
+            "pos_y": 76.9807
         },
         "pant_r_{}": {
             "series_size": 7,
@@ -193,7 +192,26 @@
             "condition": "pant_r",
             "condition_value": "{}",
             "rot_by": "rot_base",
-            "pos_y": 76.9807
+            "pos_y": -76.9807
+        },
+        "door_f_{}": {
+            "series_size": 6,
+            "series_start": 1,
+            "tilemap": "door",
+            "tileset": "door_{}",
+            "range": 120,
+            "condition": "door_f",
+            "condition_value": "{}"
+        },
+        "door_r_{}": {
+            "series_size": 6,
+            "series_start": 1,
+            "tilemap": "door",
+            "tileset": "door_{}",
+            "range": 120,
+            "condition": "door_r",
+            "condition_value": "{}",
+            "index_offset": 60
         },
         "coupler_f": {
             "tilemap": "coupler",
@@ -219,6 +237,8 @@
                 "chassis_f",
                 "coupler_f",
                 "base",
+                "door_r_{}",
+                "door_f_{}",
                 "pantbase_r",
                 "pant_r_{}",
                 "roofelems",
@@ -243,6 +263,8 @@
                 "chassis_r",
                 "coupler_r",
                 "base",
+                "door_f_{}",
+                "door_r_{}",
                 "antenna",
                 "pantbase_f",
                 "pant_f_{}",

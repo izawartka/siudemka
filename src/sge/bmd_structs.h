@@ -1,11 +1,23 @@
 #pragma once
 #include "common.h"
 
+#define SGE_BMD_FLOAT_SCALE 20000
+#define SGE_BMD_VERSION 4
+
 struct SGE_BMD_InfoBlock {
 	uint16_t version;
-	uint16_t inputsCount;
 	uint8_t nameLength;
 	char* name;
+};
+
+struct SGE_BMD_InputDef {
+	uint8_t nameLength;
+	char* name;
+};
+
+struct SGE_BMD_InputsBlock {
+	uint16_t inputsCount;
+	SGE_BMD_InputDef* inputs;
 };
 
 struct SGE_BMD_TextureDef {
@@ -49,8 +61,8 @@ struct SGE_BMD_SubmodelDef {
 	uint16_t conditionInputIndex;
 	uint8_t conditionValue;
 	uint16_t rotByInputIndex;
-	int32_t x; // in 1/20000 of pixel
-	int32_t y; // in 1/20000 of pixel
+	int32_t x; // in 1/SGE_BMD_FLOAT_SCALE of pixel
+	int32_t y; // in 1/SGE_BMD_FLOAT_SCALE of pixel
 };
 
 struct SGE_BMD_SubmodelsBlock {
@@ -73,6 +85,7 @@ struct SGE_BMD_File {
 	char* header;
 	uint32_t size;
 	SGE_BMD_InfoBlock info;
+	SGE_BMD_InputsBlock inputs;
 	SGE_BMD_AtlasesBlock atlases;
 	SGE_BMD_TextureSetsBlock textureSets;
 	SGE_BMD_SubmodelsBlock submodels;

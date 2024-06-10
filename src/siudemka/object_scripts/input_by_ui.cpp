@@ -1,9 +1,9 @@
 #include "input_by_ui.h"
 
-InputByUI::InputByUI(std::string targetObjectName, uint16_t inputIndex, uint8_t range)
+InputByUI::InputByUI(std::string targetObjectName, std::string inputName, uint8_t range)
 {
 	mp_targetObjectName = targetObjectName;
-	mp_inputIndex = inputIndex;
+	mp_inputName = inputName;
 	mp_range = range;
 }
 
@@ -14,7 +14,7 @@ InputByUI::~InputByUI()
 
 void InputByUI::init()
 {
-	m_inputIndex = mp_inputIndex;
+	m_inputName = mp_inputName;
 	m_range = mp_range;
 	setTargetObject(mp_targetObjectName);
 
@@ -52,6 +52,6 @@ void InputByUI::onUIValueChange(RZUF3_UIValueChangeEvent* event)
 		value %= m_range;
 	}
 
-	SGE_SetModelInputEvent setModelInputEvent(m_inputIndex, value);
+	SGE_SetModelInputEvent setModelInputEvent(m_inputName, value);
 	m_targetEventsManager->dispatchEvent(&setModelInputEvent);
 }

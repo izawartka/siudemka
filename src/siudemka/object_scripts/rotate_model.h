@@ -11,13 +11,13 @@ class RZUF3_ObjectScript;
 
 class RotateModel : public RZUF3_ObjectScript {
 public:
-	RotateModel(uint16_t rotInputIndex, bool autorotate = false);
+	RotateModel(std::string rotInputName, bool autorotate = false);
 	~RotateModel();
 
 	void init();
 	void deinit();
 
-	void setRotInputIndex(uint16_t rotInputIndex) { m_rotInputIndex = rotInputIndex; }
+	void setRotInputName(std::string name) { m_rotInputName = name; }
 	void setAutorotate(bool value) { m_doAutorotate = value; }
 
 protected:
@@ -25,10 +25,10 @@ protected:
 	void onSetRotAcceleration(User_SetRotAccelerationEvent* event);
 	void onUpdate(RZUF3_UpdateEvent* event);
 
-	uint16_t mp_rotInputIndex;
+	std::string mp_rotInputName;
 	bool mp_doAutorotate;
 
-	uint16_t m_rotInputIndex = 0;
+	std::string m_rotInputName;
 	bool m_doAutorotate = false;
 	bool m_isAccSet = false;
 	double m_angle = 0;

@@ -1,8 +1,8 @@
 #include "rotate_model.h"
 
-RotateModel::RotateModel(uint16_t rotInputIndex, bool autorotate)
+RotateModel::RotateModel(std::string rotInputName, bool autorotate)
 {
-	mp_rotInputIndex = rotInputIndex;
+	mp_rotInputName = rotInputName;
 	mp_doAutorotate = autorotate;
 }
 
@@ -13,7 +13,7 @@ RotateModel::~RotateModel()
 
 void RotateModel::init()
 {
-	m_rotInputIndex = mp_rotInputIndex;
+	m_rotInputName = mp_rotInputName;
 	m_doAutorotate = mp_doAutorotate;
 
 	RZUF3_EventsManager* eventsManager = getObject()->getScene()->getEventsManager();
@@ -67,7 +67,7 @@ void RotateModel::onUpdate(RZUF3_UpdateEvent* event)
 
 	value %= 120;
 
-	SGE_SetModelInputEvent setModelInputEvent(m_rotInputIndex, value);
+	SGE_SetModelInputEvent setModelInputEvent(m_rotInputName, value);
 	m_objectEventsManager->dispatchEvent(&setModelInputEvent);
 
 	m_acc = 0;

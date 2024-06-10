@@ -1,10 +1,10 @@
 #include "input_if_ui.h"
 
-InputIfUI::InputIfUI(std::string targetObjectName, int condition, uint16_t inputIndex, uint8_t valueIfTrue)
+InputIfUI::InputIfUI(std::string targetObjectName, std::string inputName, int condition, uint8_t valueIfTrue)
 {
 	mp_targetObjectName = targetObjectName;
+	mp_inputName = inputName;
 	mp_condition = condition;
-	mp_inputIndex = inputIndex;
 	mp_valueIfTrue = valueIfTrue;
 }
 
@@ -15,7 +15,7 @@ InputIfUI::~InputIfUI()
 
 void InputIfUI::init()
 {
-	m_inputIndex = mp_inputIndex;
+	m_inputName = mp_inputName;
 	m_condition = mp_condition;
 	m_valueIfTrue = mp_valueIfTrue;
 	setTargetObject(mp_targetObjectName);
@@ -51,6 +51,6 @@ void InputIfUI::onUIValueChange(RZUF3_UIValueChangeEvent* event)
 
 	uint8_t value = event->getValue() == m_condition ? m_valueIfTrue : 0;
 
-	SGE_SetModelInputEvent setModelInputEvent(m_inputIndex, value);
+	SGE_SetModelInputEvent setModelInputEvent(m_inputName, value);
 	m_targetEventsManager->dispatchEvent(&setModelInputEvent);
 }

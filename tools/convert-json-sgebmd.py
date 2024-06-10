@@ -3,7 +3,7 @@ import json
 import argparse
 import os
 
-_format_version_ = 3
+_format_version_ = 4
 global_tilemap_indexes = {}
 global_tileset_indexes = {}
 
@@ -31,17 +31,29 @@ def get_submodel_indexes(submodels_json):
     return {submodel_name: i for i, submodel_name in enumerate(submodels_json.keys())}
 
 
-def write_info_block(file, info_json, inputs_count):
+def write_info_block(file, info_json):
     model_name = info_json['name'].encode('utf-8')
     model_name_length = len(model_name)
 
     file.write(b'INFO')
-    block_size = 5 + model_name_length
+    block_size = 3 + model_name_length
     file.write(struct.pack('I', block_size))
     file.write(struct.pack('H', _format_version_))
-    file.write(struct.pack('H', inputs_count))
     file.write(struct.pack('B', model_name_length))
     file.write(model_name)
+
+
+def write_inputs_block(file, input_indexes):
+    inputs_data = b''
+    for input_name, input_index in input_indexes.items():
+        name = input_name.encode('utf-8')
+        inputs_data += struct.pack('B', len(name)) + name
+
+    file.write(b'INPT')
+    block_size = 2 + len(inputs_data)
+    file.write(struct.pack('I', block_size))
+    file.write(struct.pack('H', len(input_indexes)))
+    file.write(inputs_data)
 
 
 # also saves tilemap indexes to a global variable
@@ -200,9 +212,9 @@ def write_binary_file(json_data, output_file_path, assets_dir):
         file.write(b'SGEBMD')
         file.write(b'\x00\x00\x00\x00')  # placeholder for file size
 
+        write_info_block(file, json_data['info'])
         input_indexes = get_input_indexes(json_data['submodels'])
-        inputs_count = len(input_indexes)
-        write_info_block(file, json_data['info'], inputs_count)
+        write_inputs_block(file, input_indexes)
         write_tilemaps_block(file, json_data['tilemaps'])
         write_tilesets_block(file, json_data['tilemaps'], assets_dir)
         write_submodels_block(file, json_data['submodels'], input_indexes)
