@@ -1,5 +1,6 @@
 #include "model_def.h"
 #include "../bmd_reader.h"
+#include "../bmd_destroyer.h"
 
 SGE_ModelDef* SGE_ModelDef::getInstance(std::string filepath)
 {
@@ -26,6 +27,8 @@ bool SGE_ModelDef::load(RZUF3_AssetsManager* assetsManager)
 
 void SGE_ModelDef::unload()
 {
+	SGE_BMD_Destroyer::destroy(m_bmdFile);
+
 	spdlog::info("Unloaded BMD file: {}", m_filepath);
 }
 
