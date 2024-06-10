@@ -1,0 +1,21 @@
+#pragma once
+
+// UTF-8 encoded Polish characters
+#define CH_BIG_• "\xC4\x84"
+#define CH_BIG_∆ "\xC4\x86"
+#define CH_BIG_  "\xC4\x98"
+#define CH_BIG_£ "\xC5\x81"
+#define CH_BIG_— "\xC5\x83"
+#define CH_BIG_” "\xC3\x93"
+#define CH_BIG_å "\xC5\x9A"
+#define CH_BIG_è "\xC5\xB9"
+#define CH_BIG_Ø "\xC5\xBB"
+#define CH_• "\xC4\x85"
+#define CH_∆ "\xC4\x87"
+#define CH_  "\xC4\x99"
+#define CH_£ "\xC5\x82"
+#define CH_— "\xC5\x84"
+#define CH_” "\xC3\xB3"
+#define CH_å "\xC5\x9B"
+#define CH_è "\xC5\xBA"
+#define CH_Ø "\xC5\xBC"

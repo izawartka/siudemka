@@ -12,7 +12,7 @@ struct SGE_TextureSetRendererOptions {
 	uint8_t index = 0;
 	bool userDrawOnly = false;
 	uint8_t opacity = 255;
-
+	RZUF3_Align alignment = RZUF3_Align_TopLeft;
 };
 
 class SGE_TextureSetRenderer : public RZUF3_ObjectScript {
@@ -32,6 +32,7 @@ public:
 	void setIndex(uint8_t index, bool force = false);
 	void setUserDrawOnly(bool userDrawOnly) { m_userDrawOnly = userDrawOnly; }
 	void setOpacity(uint8_t opacity) { m_opacity = opacity; }
+	void setAlign(RZUF3_Align alignment) { m_alignment = alignment; }
 
 protected:
 	void onDraw(RZUF3_DrawEvent* event);
@@ -50,6 +51,7 @@ protected:
 	uint8_t m_index = 0;
 	bool m_userDrawOnly = false;
 	uint8_t m_opacity = 255;
+	RZUF3_Align m_alignment = RZUF3_Align_TopLeft;
 
 	RZUF3_Renderer* m_renderer = nullptr;
 	std::map<uint8_t, SGE_BMD_TextureDef*> m_textureDefs;

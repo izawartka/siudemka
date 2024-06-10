@@ -25,6 +25,7 @@ void SGE_TextureSetRenderer::init()
 	m_index = mp_options.index;
 	m_userDrawOnly = mp_options.userDrawOnly;
 	m_opacity = mp_options.opacity;
+	m_alignment = mp_options.alignment;
 
 	m_renderer = getObject()->getScene()->getRenderer();
 
@@ -69,6 +70,7 @@ void SGE_TextureSetRenderer::userDraw()
 		m_textureDef->height
 	};
 
+	m_renderer->setAlign(m_alignment);
 	if (m_opacity != 255) {
 		m_renderer->drawTextureOpaque(m_object, m_texture, &srcRect, dstRect, m_opacity);
 	}

@@ -13,6 +13,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     // the model //
     RZUF3_ObjectDefinition objSiudemka;
     objSiudemka.name = "siudemka";
+    objSiudemka.pos = RZUF3_Pos(0, 0);
     objSiudemka.scripts = {
         new SGE_ModelController("assets/siudemka/model.bmd", "assets/siudemka"),
         new RotateModel("rot_base", true),
@@ -35,7 +36,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objAutorotate.parentName = "UIRoot";
     objAutorotate.pos = RZUF3_Pos(16, 16);
     objAutorotate.scripts = {
-        new RZUF3_Checkbox({"assets/fonts/roboto-regular.ttf", "obrot", true}),
+        new RZUF3_Checkbox({"assets/fonts/roboto-regular.ttf", "obr\xC3\xB3t", true}),
         new AutorotateByCheckbox("siudemka")
     };
     m_sceneDef->objects.push_back(objAutorotate);
@@ -43,8 +44,8 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     // lights //
     std::string lightSideNames[] = { "f", "r" };
     std::string lightNames[] = { "l", "t", "r" };
-    std::string lightSideDisplayNames[] = { "oswietlenie przednie:", "oswietlenie tylne:" };
-    std::string lightDisplayNames[] = { "  lewe", "gorne", "prawe" };
+    std::string lightSideDisplayNames[] = { "o\xC5\x9Bwietlenie przednie:", "o\xC5\x9Bwietlenie tylne:" };
+    std::string lightDisplayNames[] = { "  lewe", "g\xC3\xB3rne", "prawe" };
     int lightInputs[] = { 10, 2, 0, 3, 9, 1, 8, 5, 0, 6, 7, 4};
 
     for (int j = 0; j < 2; j++)
@@ -141,7 +142,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objFrontBogieSlider.scripts = {
         new RZUF3_Slider({-30, 30, 0, bogieSliderStyle}),
         new InputByUI("siudemka", "rot_bogie_f", 120),
-		new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "wozek przedni", -112, -3})
+		new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "w\xC3\xB3zek przedni", -112, -3})
 	};
 	m_sceneDef->objects.push_back(objFrontBogieSlider);
 
@@ -153,7 +154,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objRearBogieSlider.scripts = {
         new RZUF3_Slider({-30, 30, 0, bogieSliderStyle}),
         new InputByUI("siudemka", "rot_bogie_r", 120),
-        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "wozek tylny", -112, -3})
+        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "w\xC3\xB3zek tylny", -112, -3})
     };
     m_sceneDef->objects.push_back(objRearBogieSlider);
 
