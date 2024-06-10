@@ -16,7 +16,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objSiudemka.scripts = {
         new SGE_ModelController("assets/siudemka/model.bmd", "assets/siudemka"),
         new RotateModel("rot_base", true),
-        new RotateByDrag({0, 0, 384, 192})
+        new RotateByDrag({0, 0, 384, 208})
     };
     m_sceneDef->objects.push_back(objSiudemka);
 
@@ -24,6 +24,9 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     RZUF3_ObjectDefinition objUIRoot;
     objUIRoot.name = "UIRoot";
     objUIRoot.pos = RZUF3_Pos(0, 208);
+    objUIRoot.scripts = {
+        new WindowHeightOnKey(SDLK_LSHIFT, 208, 544)
+    };
     m_sceneDef->objects.push_back(objUIRoot);
 
     // autorotate checkbox //
