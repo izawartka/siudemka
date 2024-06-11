@@ -7,7 +7,6 @@ public:
 		this->m_value = value;
 	}
 
-	int getEventType() const { return User_EventType_SetAutorotate; }
 	bool getValue() const { return m_value; }
 
 private:

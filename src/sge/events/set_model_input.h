@@ -8,7 +8,6 @@ public:
 		m_value = value;
 	}
 
-	int getEventType() const { return SGE_EventType_SetModelInput; }
 	std::string getName() const { return m_name; }
 	uint8_t getValue() const { return m_value; }
 

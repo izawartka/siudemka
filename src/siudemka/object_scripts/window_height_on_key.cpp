@@ -34,6 +34,6 @@ void WindowHeightOnKey::onKeyDown(RZUF3_KeyDownEvent* event)
 
 	m_isHidden = !m_isHidden;
 
-	RZUF3_SetWindowSizeEvent setWindowSizeEvent(0, m_isHidden ? mp_shownHeight : mp_hiddenHeight);
+	RZUF3_SetWindowSizeEvent setWindowSizeEvent(0, m_isHidden ? mp_hiddenHeight : mp_shownHeight);
 	m_eventsManager->dispatchEvent(&setWindowSizeEvent);
 }
