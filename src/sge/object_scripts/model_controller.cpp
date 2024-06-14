@@ -20,7 +20,7 @@ void SGE_ModelController::init()
 	updateModelDef();
 	addSubmodelControllers();
 
-	RZUF3_EventsManager* eventsManager = this->m_object->getScene()->getEventsManager();
+	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_ADD_LISTENER(eventsManager, Draw);
 	RZUF3_EventsManager* objEventsManager = this->m_object->getEventsManager();
 	_ADD_LISTENER_CL(objEventsManager, SetModelInput, SGE);
@@ -28,7 +28,7 @@ void SGE_ModelController::init()
 
 void SGE_ModelController::deinit()
 {
-	RZUF3_EventsManager* eventsManager = this->m_object->getScene()->getEventsManager();
+	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_REMOVE_LISTENER(eventsManager, Draw);
 	RZUF3_EventsManager* objEventsManager = this->m_object->getEventsManager();
 	_REMOVE_LISTENER_CL(objEventsManager, SetModelInput, SGE);
@@ -125,7 +125,7 @@ void SGE_ModelController::removeModelDef()
 	delete[] m_inputs;
 	m_inputNames.clear();
 
-	RZUF3_AssetsManager* assetsManager = this->m_object->getScene()->getAssetsManager();
+	RZUF3_AssetsManager* assetsManager = g_scene->getAssetsManager();
 	assetsManager->removeAsset(m_bmdFilepath);
 	m_bmdFile = nullptr;
 }
@@ -137,7 +137,7 @@ void SGE_ModelController::updateModelDef()
 	if (this->m_bmdFilepath == "") return;
 	if (this->m_bmdFile != nullptr) return;
 
-	RZUF3_AssetsManager* assetsManager = this->m_object->getScene()->getAssetsManager();
+	RZUF3_AssetsManager* assetsManager = g_scene->getAssetsManager();
 
 	RZUF3_AssetDefinition assetDefinition;
 	assetDefinition.filepath = m_bmdFilepath;
@@ -166,7 +166,7 @@ void SGE_ModelController::removeSubmodelControllers()
 {
 	for(auto& submodelRenderer : m_submodelRenderers)
 	{
-		getObject()->removeScript(submodelRenderer);
+		m_object->removeScript(submodelRenderer);
 		delete submodelRenderer;
 	}
 
@@ -192,7 +192,7 @@ void SGE_ModelController::addSubmodelControllers()
 			textureSet
 		);
 
-		getObject()->addScript(submodelRenderer);
+		m_object->addScript(submodelRenderer);
 		submodelRenderer->setUserDrawOnly(true);
 
 		m_submodelRenderers.push_back(submodelRenderer);

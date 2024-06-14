@@ -1,0 +1,13 @@
+window_title = siudemka
+autorotate_label = obrót
+light_front = oświetlenie przednie:
+light_rear = oświetlenie tylne:
+light_l = lewe
+light_t = górne
+light_r = prawe
+pant_a_label = pantograf A
+pant_b_label = pantograf B
+door_a_label = drzwi kabiny A
+door_b_label = drzwi kabiny B
+bogie_f_label = wózek przedni
+bogie_r_label = wózek tylny

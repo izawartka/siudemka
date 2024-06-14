@@ -9,7 +9,7 @@ SGE_ModelDef* SGE_ModelDef::getInstance(std::string filepath)
 	return instance;
 }
 
-bool SGE_ModelDef::load(RZUF3_AssetsManager* assetsManager)
+bool SGE_ModelDef::load()
 {
 	std::string directory = m_filepath.substr(0, m_filepath.find_last_of("/") + 1);
 

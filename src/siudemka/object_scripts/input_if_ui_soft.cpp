@@ -26,7 +26,7 @@ void InputIfUISoft::init()
 
 	_ADD_LISTENER(m_objectEventsManager, UIValueChange);
 
-	RZUF3_EventsManager* eventsManager = m_object->getScene()->getEventsManager();
+	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_ADD_LISTENER(eventsManager, Update);
 }
 
@@ -34,7 +34,7 @@ void InputIfUISoft::deinit()
 {
 	_REMOVE_LISTENER(m_objectEventsManager, UIValueChange);
 
-	RZUF3_EventsManager* eventsManager = m_object->getScene()->getEventsManager();
+	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_REMOVE_LISTENER(eventsManager, Update);
 
 	m_objectEventsManager = nullptr;
@@ -46,7 +46,7 @@ void InputIfUISoft::setTargetObject(std::string targetObjectName)
 {
 	m_targetEventsManager = nullptr;
 	m_targetObjectName = targetObjectName;
-	RZUF3_Object* targetObject = m_object->getScene()->getObject(m_targetObjectName);
+	RZUF3_Object* targetObject = g_scene->getObject(m_targetObjectName);
 	if (targetObject == nullptr)
 	{
 		spdlog::error("InputIfUISoft target object not found: {}", m_targetObjectName);

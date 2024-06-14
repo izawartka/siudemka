@@ -16,16 +16,16 @@ void RotateModel::init()
 	m_rotInputName = mp_rotInputName;
 	m_doAutorotate = mp_doAutorotate;
 
-	RZUF3_EventsManager* eventsManager = getObject()->getScene()->getEventsManager();
+	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_ADD_LISTENER(eventsManager, Update);
-	m_objectEventsManager = getObject()->getEventsManager();
+	m_objectEventsManager = m_object->getEventsManager();
 	_ADD_LISTENER_CL(m_objectEventsManager, SetAutorotate, User);
 	_ADD_LISTENER_CL(m_objectEventsManager, SetRotAcceleration, User);
 }
 
 void RotateModel::deinit()
 {
-	RZUF3_EventsManager* eventsManager = getObject()->getScene()->getEventsManager();
+	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_REMOVE_LISTENER(eventsManager, Update);
 	_REMOVE_LISTENER_CL(m_objectEventsManager, SetAutorotate, User);
 	_REMOVE_LISTENER_CL(m_objectEventsManager, SetRotAcceleration, User);

@@ -36,7 +36,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objAutorotate.parentName = "UIRoot";
     objAutorotate.pos = RZUF3_Pos(16, 16);
     objAutorotate.scripts = {
-        new RZUF3_Checkbox({"assets/fonts/roboto-regular.ttf", "obr\xC3\xB3t", true}),
+        new RZUF3_Checkbox({"assets/fonts/roboto-regular.ttf", "autorotate_label", true}),
         new AutorotateByCheckbox("siudemka")
     };
     m_sceneDef->objects.push_back(objAutorotate);
@@ -44,8 +44,8 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     // lights //
     std::string lightSideNames[] = { "f", "r" };
     std::string lightNames[] = { "l", "t", "r" };
-    std::string lightSideDisplayNames[] = { "o\xC5\x9Bwietlenie przednie:", "o\xC5\x9Bwietlenie tylne:" };
-    std::string lightDisplayNames[] = { "  lewe", "g\xC3\xB3rne", "prawe" };
+    std::string lightSideDisplayNames[] = { "light_front", "light_rear" };
+    std::string lightDisplayNames[] = { "light_l", "light_t", "light_r" };
     int lightInputs[] = { 10, 2, 0, 3, 9, 1, 8, 5, 0, 6, 7, 4};
 
     for (int j = 0; j < 2; j++)
@@ -91,7 +91,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objPantographASlider.scripts = {
 		new RZUF3_Slider(0, 1, 0),
 		new InputIfUISoft("siudemka", "pant_f", 1, 6, 0.001),
-        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "pantograf A", -112, -3})
+        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "pant_a_label", -112, -3})
 	};
     m_sceneDef->objects.push_back(objPantographASlider);
 
@@ -103,7 +103,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objPantographBSlider.scripts = {
         new RZUF3_Slider(0, 1, 0),
         new InputIfUISoft("siudemka", "pant_r", 1, 6, 0.001),
-        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "pantograf B", -112, -3})
+        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "pant_b_label", -112, -3})
     };
     m_sceneDef->objects.push_back(objPantographBSlider);
 
@@ -118,7 +118,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objDoorASlider.scripts = {
         new RZUF3_Slider(0, 1, 0),
         new InputIfUISoft("siudemka", "door_f", 1, 6, 0.01),
-        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "drzwi kabiny A", -112, -3})
+        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "door_a_label", -112, -3})
     };
     m_sceneDef->objects.push_back(objDoorASlider);
 
@@ -130,7 +130,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objDoorBSlider.scripts = {
         new RZUF3_Slider(0, 1, 0),
         new InputIfUISoft("siudemka", "door_r", 1, 6, 0.01),
-        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "drzwi kabiny B", -112, -3})
+        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "door_b_label", -112, -3})
     };
     m_sceneDef->objects.push_back(objDoorBSlider);
 
@@ -142,7 +142,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objFrontBogieSlider.scripts = {
         new RZUF3_Slider({-30, 30, 0, bogieSliderStyle}),
         new InputByUI("siudemka", "rot_bogie_f", 120),
-		new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "w\xC3\xB3zek przedni", -112, -3})
+		new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "bogie_f_label", -112, -3})
 	};
 	m_sceneDef->objects.push_back(objFrontBogieSlider);
 
@@ -154,7 +154,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objRearBogieSlider.scripts = {
         new RZUF3_Slider({-30, 30, 0, bogieSliderStyle}),
         new InputByUI("siudemka", "rot_bogie_r", 120),
-        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "w\xC3\xB3zek tylny", -112, -3})
+        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "bogie_r_label", -112, -3})
     };
     m_sceneDef->objects.push_back(objRearBogieSlider);
 
@@ -163,8 +163,14 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
 	objAuthor.name = "author";
     objAuthor.parentName = "UIRoot";
     objAuthor.pos = RZUF3_Pos(384 - 128, 304);
+
+    RZUF3_TextRendererOptions authorOptions;
+    authorOptions.fontFilepath = "assets/fonts/roboto-regular.ttf";
+    authorOptions.text = "masuo 2024.06";
+    authorOptions.style.useLangFile = false;
+
     objAuthor.scripts = {
-        new RZUF3_TextRenderer("assets/fonts/roboto-regular.ttf", "masuo 2024.06")
+        new RZUF3_TextRenderer(authorOptions)
     };
     m_sceneDef->objects.push_back(objAuthor);
 

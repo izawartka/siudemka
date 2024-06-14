@@ -16,7 +16,7 @@ void WindowHeightOnKey::init()
 {
 	m_keyCode = mp_keyCode;
 
-	m_eventsManager = m_object->getScene()->getEventsManager();
+	m_eventsManager = g_scene->getEventsManager();
 	_ADD_LISTENER(m_eventsManager, KeyDown);
 }
 

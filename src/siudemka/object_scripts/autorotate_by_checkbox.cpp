@@ -15,13 +15,13 @@ void AutorotateByCheckbox::init()
 {
 	setTargetObject(mp_targetObjectName);
 
-	RZUF3_EventsManager* objectEventsManager = getObject()->getEventsManager();
+	RZUF3_EventsManager* objectEventsManager = m_object->getEventsManager();
 	_ADD_LISTENER(objectEventsManager, UIValueChange);
 }
 
 void AutorotateByCheckbox::deinit()
 {
-	RZUF3_EventsManager* objectEventsManager = getObject()->getEventsManager();
+	RZUF3_EventsManager* objectEventsManager = m_object->getEventsManager();
 	_REMOVE_LISTENER(objectEventsManager, UIValueChange);
 
 	m_targetEventsManager = nullptr;
@@ -31,7 +31,7 @@ void AutorotateByCheckbox::setTargetObject(std::string targetObjectName)
 {
 	m_targetEventsManager = nullptr;
 	m_targetObjectName = targetObjectName;
-	RZUF3_Object* targetObject = getObject()->getScene()->getObject(m_targetObjectName);
+	RZUF3_Object* targetObject = g_scene->getObject(m_targetObjectName);
 	if (targetObject == nullptr)
 	{
 		spdlog::error("AutorotateByCheckbox target object not found: {}", m_targetObjectName);

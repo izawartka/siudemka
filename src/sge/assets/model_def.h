@@ -6,7 +6,7 @@ class SGE_ModelDef : public RZUF3_Asset {
 public:
 	static SGE_ModelDef* getInstance(std::string filepath);
 
-	bool load(RZUF3_AssetsManager* assetsManager);
+	bool load();
 	void unload();
 	void* getContent();
 

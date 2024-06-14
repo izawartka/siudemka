@@ -27,19 +27,19 @@ void SGE_TextureSetRenderer::init()
 	m_opacity = mp_options.opacity;
 	m_alignment = mp_options.alignment;
 
-	m_renderer = getObject()->getScene()->getRenderer();
+	m_renderer = g_scene->getRenderer();
 
 	updateTexture();
 	cacheTextureDefs();
 	setIndex(m_index, true);
 
-	RZUF3_EventsManager* eventsManager = getObject()->getScene()->getEventsManager();
+	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_ADD_LISTENER(eventsManager, Draw);
 }
 
 void SGE_TextureSetRenderer::deinit()
 {
-	RZUF3_EventsManager* eventsManager = getObject()->getScene()->getEventsManager();
+	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_REMOVE_LISTENER(eventsManager, Draw);
 
 	removeTexture();
@@ -123,7 +123,7 @@ void SGE_TextureSetRenderer::removeTexture()
 {
 	if (m_texture == nullptr) return;
 
-	RZUF3_AssetsManager* assetsManager = this->m_object->getScene()->getAssetsManager();
+	RZUF3_AssetsManager* assetsManager = g_scene->getAssetsManager();
 
 	assetsManager->removeAsset(m_textureFilepath);
 	m_texture = nullptr;
@@ -134,7 +134,7 @@ void SGE_TextureSetRenderer::updateTexture()
 	if (this->m_object == nullptr) return;
 	if (this->m_textureFilepath == "") return;
 
-	RZUF3_AssetsManager* assetsManager = this->m_object->getScene()->getAssetsManager();
+	RZUF3_AssetsManager* assetsManager = g_scene->getAssetsManager();
 
 	RZUF3_AssetDefinition assetDefinition;
 	assetDefinition.filepath = m_textureFilepath;

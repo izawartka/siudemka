@@ -34,7 +34,7 @@ void InputByUI::setTargetObject(std::string targetObjectName)
 {
 	m_targetEventsManager = nullptr;
 	m_targetObjectName = targetObjectName;
-	RZUF3_Object* targetObject = m_object->getScene()->getObject(m_targetObjectName);
+	RZUF3_Object* targetObject = g_scene->getObject(m_targetObjectName);
 	if (targetObject == nullptr)
 	{
 		spdlog::error("InputByUI target object not found: {}", m_targetObjectName);
