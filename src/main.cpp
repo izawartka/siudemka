@@ -12,8 +12,8 @@ int main(int argc, char* argv[]) {
 
     game = new RZUF3_Game();
     game->loadLanguage("assets/lang_pl.txt");
-    std::string title = g_lang->getText("window_title");
-    game->initWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 384, 544, false);
+    game->initWindow(384, 544, false);
+    game->setWindowTitle("window_title", true);
     game->setWindowIcon("assets/icon.png");
 
     RZUF3_SceneDefinition* sceneDef = MainScene::getSceneDef();

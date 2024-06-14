@@ -33,7 +33,5 @@ void WindowHeightOnKey::onKeyDown(RZUF3_KeyDownEvent* event)
 	if (event->getKeyCode() != m_keyCode) return;
 
 	m_isHidden = !m_isHidden;
-
-	RZUF3_SetWindowSizeEvent setWindowSizeEvent(0, m_isHidden ? mp_hiddenHeight : mp_shownHeight);
-	m_eventsManager->dispatchEvent(&setWindowSizeEvent);
+	g_game->setWindowSize(0, m_isHidden ? mp_hiddenHeight : mp_shownHeight);
 }
