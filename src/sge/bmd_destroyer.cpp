@@ -1,50 +1,45 @@
 #include "bmd_destroyer.h"
 
-// example:
-// _DEL_ARR(bmdFile.inputs.inputs[i], name, nameLength);
-// delete[bmdFile.inputs.inputs[i].nameLength] bmdFile.inputs.inputs[i].name;
-#define _DEL_ARR(x, y, z) delete[x##.##z] x##.##y
-
 void SGE_BMD_Destroyer::destroy(SGE_BMD_File& bmdFile)
 {
 	// header
-	delete[6] bmdFile.header;
+	delete[] bmdFile.header;
 
 	// info block
-	_DEL_ARR(bmdFile.info, name, nameLength);
-
+	
+        delete[] bmdFile.info.name;
 	// inputs block
 	for (int i = 0; i < bmdFile.inputs.inputsCount; i++)
 	{
-		_DEL_ARR(bmdFile.inputs.inputs[i], name, nameLength);
+	        delete[] bmdFile.inputs.inputs[i].name;
 	}
-	_DEL_ARR(bmdFile.inputs, inputs, inputsCount);
+	delete[] bmdFile.inputs.inputs;
 
 	// atlases block
 	for (int i = 0; i < bmdFile.atlases.atlasesCount; i++)
 	{
-		_DEL_ARR(bmdFile.atlases.atlases[i], baseImageName, baseImageNameLength);
+	        delete[] bmdFile.atlases.atlases[i].baseImageName;
 	}
-	_DEL_ARR(bmdFile.atlases, atlases, atlasesCount);
+	delete[] bmdFile.atlases.atlases;
 
 	// texture sets block
 	for (int i = 0; i < bmdFile.textureSets.textureSetsCount; i++)
 	{
-		_DEL_ARR(bmdFile.textureSets.textureSets[i], textures, texturesCount);
+	        delete[] bmdFile.textureSets.textureSets[i].textures;
 	}
-	_DEL_ARR(bmdFile.textureSets, textureSets, textureSetsCount);
+	delete[] bmdFile.textureSets.textureSets;
 
 	// submodels block
 	for (int i = 0; i < bmdFile.submodels.submodelsCount; i++)
 	{
-		_DEL_ARR(bmdFile.submodels.submodels[i], name, nameLength);
+	        delete[] bmdFile.submodels.submodels[i].name;
 	}
-	_DEL_ARR(bmdFile.submodels, submodels, submodelsCount);
+	delete[] bmdFile.submodels.submodels;
 
 	// views block
 	for (int i = 0; i < bmdFile.views.viewsCount; i++)
 	{
-		_DEL_ARR(bmdFile.views.views[i], submodels, submodelsCount);
+	        delete[] bmdFile.views.views[i].submodels;
 	}
-	_DEL_ARR(bmdFile.views, views, viewsCount);
+	delete bmdFile.views.views;
 }
