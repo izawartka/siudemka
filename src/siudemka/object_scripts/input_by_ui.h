@@ -1,5 +1,5 @@
 #pragma once
-#include "../common.h"
+#include "object_scripts.h"
 
 class RZUF3_ObjectScript;
 class RZUF3_UIValueChangeEvent;

@@ -1,6 +1,6 @@
 #pragma once
-#include "../common.h"
 #include "../events/events.h"
+#include "object_scripts.h"
 
 class RZUF3_ObjectScript;
 
