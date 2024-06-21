@@ -1,5 +1,5 @@
 #pragma once
-#include "common.h"
+#include "../common.h"
 #include "bmd_structs.h"
 
 class SGE_BMD_Reader {

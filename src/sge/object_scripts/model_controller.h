@@ -1,10 +1,10 @@
 #pragma once
-#include "../common.h"
 #include "../assets/model_def.h"
 #include "../events/set_model_input.h"
-#include "texture_set_renderer.h"
+#include "object_scripts.h"
 
 class RZUF3_ObjectScript;
+class SGE_TextureSetRenderer;
 
 class SGE_ModelController : public RZUF3_ObjectScript {
 public:

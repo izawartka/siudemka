@@ -1,6 +1,6 @@
 #include "model_def.h"
-#include "../bmd_reader.h"
-#include "../bmd_destroyer.h"
+#include "../bmd/bmd_reader.h"
+#include "../bmd/bmd_destroyer.h"
 
 SGE_ModelDef* SGE_ModelDef::getInstance(std::string filepath)
 {

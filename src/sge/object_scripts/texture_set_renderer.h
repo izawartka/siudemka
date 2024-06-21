@@ -1,6 +1,6 @@
 #pragma once
-#include "../common.h"
-#include "../bmd_structs.h"
+#include "../bmd/bmd_structs.h"
+#include "object_scripts.h"
 
 class RZUF3_ObjectScript;
 

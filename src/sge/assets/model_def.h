@@ -1,6 +1,6 @@
 #pragma once
 #include "../common.h"
-#include "../bmd_structs.h"
+#include "../bmd/bmd_structs.h"
 
 class SGE_ModelDef : public RZUF3_Asset {
 public:

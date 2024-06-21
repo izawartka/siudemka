@@ -1,5 +1,5 @@
 #pragma once
-#include "common.h"
+#include "../common.h"
 
 #define SGE_BMD_FLOAT_SCALE 20000
 #define SGE_BMD_VERSION 4

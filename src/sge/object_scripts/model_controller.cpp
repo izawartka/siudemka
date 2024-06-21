@@ -149,7 +149,7 @@ void SGE_ModelController::updateModelDef()
 
 	if (this->m_bmdFile == nullptr)
 	{
-		spdlog::error("BMD File {} not found", this->m_bmdFilepath);
+		spdlog::error("BMD File {} could not be loaded", this->m_bmdFilepath);
 		return;
 	}
 
