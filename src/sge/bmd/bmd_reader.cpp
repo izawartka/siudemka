@@ -73,6 +73,8 @@ bool SGE_BMD_Reader::readInfoBlock(std::ifstream& file, SGE_BMD_InfoBlock& infoB
     _READ(infoBlock.version);
     _READ(infoBlock.nameLength);
     _READ_STR(infoBlock.name, infoBlock.nameLength);
+    _READ(infoBlock.originX);
+    _READ(infoBlock.originY);
 
     return true;
 }

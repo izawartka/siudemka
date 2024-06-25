@@ -6,17 +6,25 @@
 class RZUF3_ObjectScript;
 class SGE_TextureSetRenderer;
 
+struct SGE_ModelControllerOptions {
+	std::string bmdFilepath;
+	std::string assetsDirpath = "";
+	bool centerAtOrigin = true;
+};
+
 class SGE_ModelController : public RZUF3_ObjectScript {
 public:
-	SGE_ModelController(std::string filepath, std::string assetsDirpath);
+	SGE_ModelController(std::string filepath);
+	SGE_ModelController(SGE_ModelControllerOptions options);
 	~SGE_ModelController();
 
 	void init();
 	void deinit();
 
-	void setFilepath(std::string filepath);
+	void setFilepath(std::string filepath, std::string assetsDirpath = "");
 	bool setInput(uint16_t index, uint8_t value);
 	bool setInput(std::string name, uint8_t value);
+	bool setAngleInput(uint16_t index, double angle);
 	uint8_t getInput(uint16_t index);
 
 protected:
@@ -24,15 +32,15 @@ protected:
 	void onSetModelInput(SGE_SetModelInputEvent* event);
 
 	void removeModelDef();
-	void updateModelDef();
+	void createModelDef();
 	void removeSubmodelControllers();
-	void addSubmodelControllers();
+	void createSubmodelControllers();
 	void drawSubmodels();
 	void drawSubmodel(uint16_t index);
 
-	std::string mp_bmdFilepath;
-	std::string mp_assetsDirpath;
+	SGE_ModelControllerOptions mp_options;
 
+	bool m_centerAtOrigin = true;
 	std::string m_bmdFilepath;
 	std::string m_assetsDirpath;
 	SGE_BMD_File* m_bmdFile = nullptr;

@@ -3,7 +3,8 @@ import json
 import argparse
 import os
 
-_format_version_ = 4
+_format_version_ = 5
+_float_scale_ = 20000
 global_tilemap_indexes = {}
 global_tileset_indexes = {}
 
@@ -36,11 +37,13 @@ def write_info_block(file, info_json):
     model_name_length = len(model_name)
 
     file.write(b'INFO')
-    block_size = 3 + model_name_length
+    block_size = 3 + model_name_length + 8
     file.write(struct.pack('I', block_size))
     file.write(struct.pack('H', _format_version_))
     file.write(struct.pack('B', model_name_length))
     file.write(model_name)
+    file.write(struct.pack('I', int(info_json.get('originX', 0) * _float_scale_)))
+    file.write(struct.pack('I', int(info_json.get('originY', 0) * _float_scale_)))
 
 
 def write_inputs_block(file, input_indexes):
@@ -175,8 +178,8 @@ def write_submodels_block(file, submodels_json, input_indexes):
             'H', condition) + struct.pack(
             'B', condition_value) + struct.pack(
             'H', rot_by) + struct.pack(
-            'i', int(submodel.get('pos_x', 0) * 20000)) + struct.pack(
-            'i', int(submodel.get('pos_y', 0) * 20000))
+            'i', int(submodel.get('pos_x', 0) * _float_scale_)) + struct.pack(
+            'i', int(submodel.get('pos_y', 0) * _float_scale_))
 
     file.write(b'SMOD')
     block_size = 2 + len(submodels_data)

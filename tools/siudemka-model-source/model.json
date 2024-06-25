@@ -1,6 +1,8 @@
 {
     "info": {
-        "name": "siudemka"
+        "name": "siudemka",
+        "originX": 192.0000,
+        "originY": 151.6371
     },    
     "tilemaps": [
         {

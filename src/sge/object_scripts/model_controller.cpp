@@ -1,10 +1,14 @@
 #include "model_controller.h"
 #include "../assets/model_def.h"
 
-SGE_ModelController::SGE_ModelController(std::string filepath, std::string assetsDirpath)
+SGE_ModelController::SGE_ModelController(std::string filepath)
 {
-	mp_bmdFilepath = filepath;
-	mp_assetsDirpath = assetsDirpath;
+	mp_options.bmdFilepath = filepath;
+}
+
+SGE_ModelController::SGE_ModelController(SGE_ModelControllerOptions options)
+{
+	mp_options = options;
 }
 
 SGE_ModelController::~SGE_ModelController()
@@ -14,11 +18,8 @@ SGE_ModelController::~SGE_ModelController()
 
 void SGE_ModelController::init()
 {
-	m_bmdFilepath = mp_bmdFilepath;
-	m_assetsDirpath = mp_assetsDirpath;
-
-	updateModelDef();
-	addSubmodelControllers();
+	m_centerAtOrigin = mp_options.centerAtOrigin;
+	setFilepath(mp_options.bmdFilepath, mp_options.assetsDirpath);
 
 	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_ADD_LISTENER(eventsManager, Draw);
@@ -39,13 +40,19 @@ void SGE_ModelController::deinit()
 	m_bmdFile = nullptr;
 }
 
-void SGE_ModelController::setFilepath(std::string filepath)
+void SGE_ModelController::setFilepath(std::string filepath, std::string assetsDirpath)
 {
 	removeModelDef();
 	removeSubmodelControllers();
 	m_bmdFilepath = filepath;
-	updateModelDef();
-	addSubmodelControllers();
+
+	if(assetsDirpath.empty())
+		m_assetsDirpath = filepath.substr(0, filepath.find_last_of("/") + 1);
+	else
+		m_assetsDirpath = assetsDirpath;
+
+	createModelDef();
+	createSubmodelControllers();
 }
 
 bool SGE_ModelController::setInput(uint16_t index, uint8_t value)
@@ -90,6 +97,15 @@ bool SGE_ModelController::setInput(std::string name, uint8_t value)
 	return true;
 }
 
+bool SGE_ModelController::setAngleInput(uint16_t index, double angle)
+{
+	int value = (int)(angle * 60.0 / M_PI);
+	if (value < 0) value += 120 * (-value / 120 + 1);
+	value %= 120;
+
+	return setInput(index, (uint8_t)value);
+}
+
 uint8_t SGE_ModelController::getInput(uint16_t index)
 {
 	if (m_bmdFile == nullptr) return 0;
@@ -130,11 +146,10 @@ void SGE_ModelController::removeModelDef()
 	m_bmdFile = nullptr;
 }
 
-void SGE_ModelController::updateModelDef()
+void SGE_ModelController::createModelDef()
 {
-
 	if (this->m_object == nullptr) return;
-	if (this->m_bmdFilepath == "") return;
+	if (this->m_bmdFilepath.empty()) return;
 	if (this->m_bmdFile != nullptr) return;
 
 	RZUF3_AssetsManager* assetsManager = g_scene->getAssetsManager();
@@ -173,7 +188,7 @@ void SGE_ModelController::removeSubmodelControllers()
 	m_submodelRenderers.clear();
 }
 
-void SGE_ModelController::addSubmodelControllers()
+void SGE_ModelController::createSubmodelControllers()
 {
 	if (m_object == nullptr) return;
 	if (m_bmdFile == nullptr) return;
@@ -185,7 +200,7 @@ void SGE_ModelController::addSubmodelControllers()
 		SGE_BMD_TextureSetDef* textureSet = &m_bmdFile->textureSets.textureSets[submodel->textureSetIndex];
 		SGE_BMD_AtlasDef* atlas = &m_bmdFile->atlases.atlases[textureSet->atlasIndex];
 
-		std::string baseImageFilepath = m_assetsDirpath + "/" + atlas->baseImageName;
+		std::string baseImageFilepath = m_assetsDirpath + atlas->baseImageName;
 
 		SGE_TextureSetRenderer* submodelRenderer = new SGE_TextureSetRenderer(
 			baseImageFilepath,
@@ -244,10 +259,16 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
 	double rotRad = rot * M_PI / 60.0;
 	double x = submodel->y * cos(rotRad) - submodel->x * sin(rotRad);
 	double y = submodel->y * sin(rotRad) + submodel->x * cos(rotRad);
+	y *= yScale;
+
+	if (m_centerAtOrigin) {
+		x += m_bmdFile->info.originX;
+		y += m_bmdFile->info.originY;
+	}
 
 	submodelRenderer->setDstPos(
 		x / SGE_BMD_FLOAT_SCALE,
-		y * yScale / SGE_BMD_FLOAT_SCALE
+		y / SGE_BMD_FLOAT_SCALE
 	);
 	submodelRenderer->userDraw();
 }

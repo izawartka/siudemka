@@ -11,9 +11,13 @@ SGE_ModelDef* SGE_ModelDef::getInstance(std::string filepath)
 
 bool SGE_ModelDef::load()
 {
-	std::string directory = m_filepath.substr(0, m_filepath.find_last_of("/") + 1);
-
 	std::ifstream file(m_filepath, std::ios::binary);
+
+	if (!file.is_open())
+	{
+		spdlog::error("Failed to open BMD file: {}", m_filepath);
+		return false;
+	}
 
 	if(!SGE_BMD_Reader::readFile(file, m_bmdFile))
 	{

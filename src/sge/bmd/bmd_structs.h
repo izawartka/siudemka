@@ -2,12 +2,14 @@
 #include "../common.h"
 
 #define SGE_BMD_FLOAT_SCALE 20000
-#define SGE_BMD_VERSION 4
+#define SGE_BMD_VERSION 5
 
 struct SGE_BMD_InfoBlock {
 	uint16_t version;
 	uint8_t nameLength;
 	char* name;
+	uint32_t originX; // in 1/SGE_BMD_FLOAT_SCALE of pixel
+	uint32_t originY; // in 1/SGE_BMD_FLOAT_SCALE of pixel
 };
 
 struct SGE_BMD_InputDef {

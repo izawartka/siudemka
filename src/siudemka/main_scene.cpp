@@ -11,11 +11,14 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     m_sceneDef->name = "siudemka";
 
     // the model //
+    SGE_ModelControllerOptions modelOptions;
+    modelOptions.bmdFilepath = "assets/siudemka/model.bmd";
+    modelOptions.centerAtOrigin = false;
+
     RZUF3_ObjectDefinition objSiudemka;
     objSiudemka.name = "siudemka";
-    objSiudemka.pos = RZUF3_Pos(0, 0);
     objSiudemka.scripts = {
-        new SGE_ModelController("assets/siudemka/model.bmd", "assets/siudemka"),
+        new SGE_ModelController(modelOptions),
         new RotateModel("rot_base", true),
         new RotateByDrag({0, 0, 384, 208})
     };
