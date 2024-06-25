@@ -262,8 +262,8 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
 	y *= yScale;
 
 	if (m_centerAtOrigin) {
-		x += m_bmdFile->info.originX;
-		y += m_bmdFile->info.originY;
+		x -= m_bmdFile->info.originX;
+		y -= m_bmdFile->info.originY;
 	}
 
 	submodelRenderer->setDstPos(
