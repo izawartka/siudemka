@@ -3,10 +3,10 @@
 
 class RZUF3_ObjectScript;
 
-class WindowHeightOnKey : public RZUF3_ObjectScript {
+class ModelOnlyOnKey : public RZUF3_ObjectScript {
 public:
-	WindowHeightOnKey(SDL_KeyCode keyCode, int hiddenHeight, int shownHeight);
-	~WindowHeightOnKey();
+	ModelOnlyOnKey(SDL_KeyCode keyCode, std::string modelObjName, std::string uiObjName);
+	~ModelOnlyOnKey();
 
 	void init();
 	void deinit();
@@ -17,10 +17,14 @@ protected:
 	void onKeyDown(RZUF3_KeyDownEvent* event);
 
 	SDL_KeyCode mp_keyCode;
-	int mp_hiddenHeight;
-	int mp_shownHeight;
+	std::string mp_modelObjName;
+	std::string mp_uiObjName;
 
 	SDL_KeyCode m_keyCode = SDLK_UNKNOWN;
+	RZUF3_Object* m_modelObj = nullptr;
+	RZUF3_Object* m_uiObj = nullptr;
+	RZUF3_Anchor m_modelDefAnchor;
+	RZUF3_Anchor m_uiDefAnchor;
 	bool m_isHidden = false;
 	RZUF3_EventsManager* m_eventsManager = nullptr;
 

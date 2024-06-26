@@ -20,16 +20,17 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objSiudemka.scripts = {
         new SGE_ModelController(modelOptions),
         new RotateModel("rot_base", true),
-        new RotateByDrag({0, 0, 384, 208})
+        new RotateByDrag({0, 0, SIUDEMKA_WIDTH, SIUDEMKA_HEIGHT}),
+        new RZUF3_WindowAnchor({0.5, 0.5, -SIUDEMKA_WIDTH/2, -ALL_HEIGHT/2})
     };
     m_sceneDef->objects.push_back(objSiudemka);
 
     // UI root //
     RZUF3_ObjectDefinition objUIRoot;
     objUIRoot.name = "UIRoot";
-    objUIRoot.pos = RZUF3_Pos(0, 208);
     objUIRoot.scripts = {
-        new WindowHeightOnKey(SDLK_LSHIFT, 208, 544)
+        new ModelOnlyOnKey(SDLK_LSHIFT, "siudemka", "UIRoot"),
+        new RZUF3_WindowAnchor({0.5, 0.5, -SIUDEMKA_WIDTH/2, -UI_OFFCENTER/2})
     };
     m_sceneDef->objects.push_back(objUIRoot);
 
@@ -164,16 +165,16 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     // author //
     RZUF3_ObjectDefinition objAuthor;
 	objAuthor.name = "author";
-    objAuthor.parentName = "UIRoot";
-    objAuthor.pos = RZUF3_Pos(384 - 128, 304);
 
     RZUF3_TextRendererOptions authorOptions;
     authorOptions.fontFilepath = "assets/fonts/roboto-regular.ttf";
     authorOptions.text = "masuo 2024.06";
     authorOptions.style.useLangFile = false;
+    authorOptions.style.alignment = RZUF3_Align_BottomRight;
 
     objAuthor.scripts = {
-        new RZUF3_TextRenderer(authorOptions)
+        new RZUF3_TextRenderer(authorOptions),
+        new RZUF3_WindowAnchor({1, 1, -16, -16})
     };
     m_sceneDef->objects.push_back(objAuthor);
 
