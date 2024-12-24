@@ -39,12 +39,17 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     m_sceneDef->objects.push_back(objUIRoot);
 
     // autorotate checkbox //
+    RZUF3_CheckboxOptions autorotateOptions;
+    autorotateOptions.style.textStyle.fontFilepath = MAIN_FONT;
+    autorotateOptions.style.defaultColors();
+    autorotateOptions.labelText = "autorotate_label";
+
     RZUF3_ObjectDefinition objAutorotate;
     objAutorotate.name = "autorotate_check";
     objAutorotate.parentName = "ui_root";
     objAutorotate.pos = RZUF3_Pos(16, 16);
     objAutorotate.scripts = {
-        new RZUF3_Checkbox({MAIN_FONT, "autorotate_label", true}),
+        new RZUF3_Checkbox(autorotateOptions),
         new AutorotateByCheckbox(MODEL_OBJ_NAME)
     };
     m_sceneDef->objects.push_back(objAutorotate);

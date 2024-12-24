@@ -10,7 +10,7 @@ struct SGE_TextureSetRendererOptions {
 	int x = 0;
 	int y = 0;
 	uint8_t index = 0;
-	bool userDrawOnly = false;
+	bool useOnDraw = true;
 	uint8_t opacity = 255;
 	RZUF3_Align alignment = RZUF3_Align_TopLeft;
 };
@@ -24,15 +24,15 @@ public:
 	void init();
 	void deinit();
 
-	void userDraw();
+	void draw();
 
 	void setFilepath(std::string filepath);
 	void setTextureSet(SGE_BMD_TextureSetDef* setDef);
 	void setDstPos(int x, int y);
 	void setIndex(uint8_t index, bool force = false);
-	void setUserDrawOnly(bool userDrawOnly) { m_userDrawOnly = userDrawOnly; }
-	void setOpacity(uint8_t opacity) { m_opacity = opacity; }
-	void setAlign(RZUF3_Align alignment) { m_alignment = alignment; }
+	void setUseOnDraw(bool useOnDraw);
+	void setOpacity(uint8_t opacity) { m_options.opacity = opacity; }
+	void setAlign(RZUF3_Align alignment) { m_options.alignment = alignment; }
 
 protected:
 	void onDraw(RZUF3_DrawEvent* event);
@@ -43,17 +43,9 @@ protected:
 
 	SGE_TextureSetRendererOptions mp_options;
 
-	std::string m_textureFilepath;
+	SGE_TextureSetRendererOptions m_options;
 	SDL_Texture* m_texture = nullptr;
-	SGE_BMD_TextureSetDef* m_setDef = nullptr;
-	int m_x = 0;
-	int m_y = 0;
-	uint8_t m_index = 0;
-	bool m_userDrawOnly = false;
-	uint8_t m_opacity = 255;
-	RZUF3_Align m_alignment = RZUF3_Align_TopLeft;
-
-	RZUF3_Renderer* m_renderer = nullptr;
+	bool m_hasOnDrawListener = false;
 	std::map<uint8_t, SGE_BMD_TextureDef*> m_textureDefs;
 	SGE_BMD_TextureDef* m_textureDef = nullptr;
 

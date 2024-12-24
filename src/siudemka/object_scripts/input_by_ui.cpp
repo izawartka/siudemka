@@ -46,7 +46,11 @@ void InputByUI::setTargetObject(std::string targetObjectName)
 void InputByUI::onUIValueChange(RZUF3_UIValueChangeEvent* event)
 {
 	if (m_targetEventsManager == nullptr) return;
-	int value = event->getValue();
+	if (event->getValue() == nullptr) return;
+	if (event->getTypeIndex() != typeid(int)) return;
+
+	int value = *static_cast<int*>(event->getValue());
+
 	if (m_range != 0) {
 		if (value < 0) value -= m_range * (value / m_range - 1);
 		value %= m_range;

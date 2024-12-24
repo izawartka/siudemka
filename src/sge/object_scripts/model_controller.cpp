@@ -242,19 +242,18 @@ void SGE_ModelController::createSubmodelControllers()
 
 		std::string baseImageFilepath = SGE_TEXTURES_ROOT + std::string(atlas->baseImagePath);
 
-		SGE_TextureSetRenderer* submodelRenderer = new SGE_TextureSetRenderer(
-			baseImageFilepath,
-			textureSet
-		);
+		SGE_TextureSetRendererOptions options;
+		options.filepath = baseImageFilepath;
+		options.setDef = textureSet;
+		options.useOnDraw = false;
 
+		SGE_TextureSetRenderer* submodelRenderer = new SGE_TextureSetRenderer(options);
 		m_object->addScript(submodelRenderer);
-		submodelRenderer->setUserDrawOnly(true);
-
 		m_submodelRenderers.push_back(submodelRenderer);
 	}
 }
 
-const double yScale = cos(75.0 * M_PI / 180.0);
+const double yScale = cos(SGE_CAMERA_ISO_ANGLE);
 
 void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
 {
@@ -301,5 +300,5 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
 		std::round(pos.x),
 		std::round(pos.y)
 	);
-	submodelRenderer->userDraw();
+	submodelRenderer->draw();
 }

@@ -48,8 +48,11 @@ void InputIfUI::setTargetObject(std::string targetObjectName)
 void InputIfUI::onUIValueChange(RZUF3_UIValueChangeEvent* event)
 {
 	if (m_targetEventsManager == nullptr) return;
+	if (event->getTypeIndex() != typeid(int)) return;
+	if (event->getValue() == nullptr) return;
 
-	uint8_t value = event->getValue() == m_condition ? m_valueIfTrue : 0;
+	int uiValue = *static_cast<int*>(event->getValue());
+	uint8_t value = uiValue == m_condition ? m_valueIfTrue : 0;
 
 	SGE_SetModelInputEvent setModelInputEvent(m_inputName, value);
 	m_targetEventsManager->dispatchEvent(&setModelInputEvent);

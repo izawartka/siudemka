@@ -50,5 +50,9 @@ void AutorotateByCheckbox::setAutorotate(bool value)
 
 void AutorotateByCheckbox::onUIValueChange(RZUF3_UIValueChangeEvent* event)
 {
-	setAutorotate(event->getValue() != 0);
+	if (event->getTypeIndex() != typeid(bool)) return;
+	if (event->getValue() == nullptr) return;
+
+	bool uiValue = *static_cast<bool*>(event->getValue());
+	setAutorotate(uiValue);
 }

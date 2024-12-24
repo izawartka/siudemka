@@ -57,7 +57,11 @@ void InputIfUISoft::setTargetObject(std::string targetObjectName)
 
 void InputIfUISoft::onUIValueChange(RZUF3_UIValueChangeEvent* event)
 {
-	m_active = event->getValue() == m_condition;
+	if(event->getTypeIndex() != typeid(int)) return;
+	if (event->getValue() == nullptr) return;
+
+	int uiValue = *static_cast<int*>(event->getValue());
+	m_active = uiValue == m_condition;
 }
 
 void InputIfUISoft::onUpdate(RZUF3_UpdateEvent* event)
