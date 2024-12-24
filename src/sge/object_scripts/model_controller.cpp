@@ -1,5 +1,7 @@
 #include "model_controller.h"
+#include "world_draw_queue.h"
 #include "../assets/model_def.h"
+#include "../point_utils.h"
 
 SGE_ModelController::SGE_ModelController(std::string filepath)
 {
@@ -19,12 +21,18 @@ SGE_ModelController::~SGE_ModelController()
 void SGE_ModelController::init()
 {
 	m_centerAtOrigin = mp_options.centerAtOrigin;
-	setFilepath(mp_options.bmdFilepath, mp_options.assetsDirpath);
+	m_layer = mp_options.layer;
+	m_worldPosition = mp_options.worldPosition;
+	setFilepath(mp_options.bmdFilepath);
+
+	uint16_t rotBaseIndex = getInputIndex("rot_base");
+	setInput(rotBaseIndex, mp_options.startRotBase);
 
 	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_ADD_LISTENER(eventsManager, Draw);
 	RZUF3_EventsManager* objEventsManager = this->m_object->getEventsManager();
 	_ADD_LISTENER_CL(objEventsManager, SetModelInput, SGE);
+	_ADD_LISTENER_CL(objEventsManager, SetWorldPosition, SGE);
 }
 
 void SGE_ModelController::deinit()
@@ -33,6 +41,7 @@ void SGE_ModelController::deinit()
 	_REMOVE_LISTENER(eventsManager, Draw);
 	RZUF3_EventsManager* objEventsManager = this->m_object->getEventsManager();
 	_REMOVE_LISTENER_CL(objEventsManager, SetModelInput, SGE);
+	_REMOVE_LISTENER_CL(objEventsManager, SetWorldPosition, SGE);
 
 	removeModelDef();
 	removeSubmodelControllers();
@@ -40,19 +49,32 @@ void SGE_ModelController::deinit()
 	m_bmdFile = nullptr;
 }
 
-void SGE_ModelController::setFilepath(std::string filepath, std::string assetsDirpath)
+void SGE_ModelController::setFilepath(std::string filepath)
 {
 	removeModelDef();
 	removeSubmodelControllers();
 	m_bmdFilepath = filepath;
-
-	if(assetsDirpath.empty())
-		m_assetsDirpath = filepath.substr(0, filepath.find_last_of("/") + 1);
-	else
-		m_assetsDirpath = assetsDirpath;
-
 	createModelDef();
 	createSubmodelControllers();
+}
+
+uint16_t SGE_ModelController::getInputIndex(std::string name)
+{
+	if (m_bmdFile == nullptr) return 0xFFFF;
+	if (name.empty()) return 0xFFFF;
+
+	auto it = m_inputNames.find(name);
+	if (it == m_inputNames.end()) {
+		spdlog::error(
+			"Input {} does not exist in the model {}",
+			name,
+			m_bmdFile->info.name
+		);
+
+		return 0xFFFF;
+	}
+
+	return it->second;
 }
 
 bool SGE_ModelController::setInput(uint16_t index, uint8_t value)
@@ -75,31 +97,9 @@ bool SGE_ModelController::setInput(uint16_t index, uint8_t value)
 	return true;
 }
 
-bool SGE_ModelController::setInput(std::string name, uint8_t value)
-{
-	if (m_bmdFile == nullptr) return false;
-	if (name.empty()) return false;
-
-	auto it = m_inputNames.find(name);
-	if (it == m_inputNames.end()) {
-		spdlog::error(
-			"Input {} does not exist in the model {}",
-			name,
-			m_bmdFile->info.name
-		);
-
-		return false;
-	}
-
-	uint16_t index = it->second;
-	m_inputs[index] = value;
-
-	return true;
-}
-
 bool SGE_ModelController::setAngleInput(uint16_t index, double angle)
 {
-	int value = (int)(angle * 60.0 / M_PI);
+	int value = std::round(angle * SGE_ROTATION_SCALE);
 	if (value < 0) value += 120 * (-value / 120 + 1);
 	value %= 120;
 
@@ -124,14 +124,54 @@ uint8_t SGE_ModelController::getInput(uint16_t index)
 	return m_inputs[index];
 }
 
+void SGE_ModelController::setLayer(int layer)
+{
+	m_layer = layer;
+}
+
+void SGE_ModelController::setPosition(SGE_Point position)
+{
+	m_worldPosition = position;
+}
+
+void SGE_ModelController::drawSubmodels()
+{
+	if (!m_bmdFile) return;
+
+	uint8_t viewInputValue = getInput(m_bmdFile->views.indexByInputIndex);
+	uint8_t viewIndex = (viewInputValue * m_bmdFile->views.viewsCount / 120) % m_bmdFile->views.viewsCount;
+	SGE_BMD_ViewDef* view = &m_bmdFile->views.views[viewIndex];
+
+	for (int i = 0; i < view->submodelsCount; i++)
+	{
+		uint16_t submodelIndex = view->submodels[i];
+		drawSubmodel(submodelIndex);
+	}
+}
+
 void SGE_ModelController::onDraw(RZUF3_DrawEvent* event)
 {
-	drawSubmodels();
+	if (m_bmdFile == nullptr) return;
+	if (g_sgeWorldDrawQueue == nullptr || !mp_options.useDrawQueue)
+	{
+		drawSubmodels();
+		return;
+	}
+
+	SGE_Point screenPos = m_worldPosition;
+	SGE_PointUtils::worldToScreen(screenPos);
+	g_sgeWorldDrawQueue->addToQueue(this, m_layer, screenPos.z);
 }
 
 void SGE_ModelController::onSetModelInput(SGE_SetModelInputEvent* event)
 {
-	setInput(event->getName(), event->getValue());
+	uint16_t inputIndex = getInputIndex(event->getName());
+	setInput(inputIndex, event->getValue());
+}
+
+void SGE_ModelController::onSetWorldPosition(SGE_SetWorldPositionEvent* event)
+{
+	setPosition(event->getPosition());
 }
 
 void SGE_ModelController::removeModelDef()
@@ -200,7 +240,7 @@ void SGE_ModelController::createSubmodelControllers()
 		SGE_BMD_TextureSetDef* textureSet = &m_bmdFile->textureSets.textureSets[submodel->textureSetIndex];
 		SGE_BMD_AtlasDef* atlas = &m_bmdFile->atlases.atlases[textureSet->atlasIndex];
 
-		std::string baseImageFilepath = m_assetsDirpath + atlas->baseImageName;
+		std::string baseImageFilepath = SGE_TEXTURES_ROOT + std::string(atlas->baseImagePath);
 
 		SGE_TextureSetRenderer* submodelRenderer = new SGE_TextureSetRenderer(
 			baseImageFilepath,
@@ -211,21 +251,6 @@ void SGE_ModelController::createSubmodelControllers()
 		submodelRenderer->setUserDrawOnly(true);
 
 		m_submodelRenderers.push_back(submodelRenderer);
-	}
-}
-
-void SGE_ModelController::drawSubmodels()
-{
-	if(!m_bmdFile) return;
-
-	uint8_t viewInputValue = getInput(m_bmdFile->views.indexByInputIndex);
-	uint8_t viewIndex = (viewInputValue * m_bmdFile->views.viewsCount / 120) % m_bmdFile->views.viewsCount;
-	SGE_BMD_ViewDef* view = &m_bmdFile->views.views[viewIndex];
-
-	for(int i = 0; i < view->submodelsCount; i++)
-	{
-		uint16_t submodelIndex = view->submodels[i];
-		drawSubmodel(submodelIndex);
 	}
 }
 
@@ -257,18 +282,24 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
 	submodelRenderer->setIndex((uint8_t)index);
 
 	double rotRad = rot * M_PI / 60.0;
-	double x = submodel->y * cos(rotRad) - submodel->x * sin(rotRad);
-	double y = submodel->y * sin(rotRad) + submodel->x * cos(rotRad);
-	y *= yScale;
+	SGE_Point pos = m_worldPosition;
+	SGE_PointUtils::worldToScreen(pos);
+
+	double offX = submodel->y * cos(rotRad) - submodel->x * sin(rotRad);
+	double offY = submodel->y * sin(rotRad) + submodel->x * cos(rotRad);
+	offY *= yScale;
+
+	pos.x += (int)(offX / SGE_BMD_FLOAT_SCALE);
+	pos.y += (int)(offY / SGE_BMD_FLOAT_SCALE);
 
 	if (m_centerAtOrigin) {
-		x -= m_bmdFile->info.originX;
-		y -= m_bmdFile->info.originY;
+		pos.x -= (double)m_bmdFile->info.originX / SGE_BMD_FLOAT_SCALE;
+		pos.y -= (double)m_bmdFile->info.originY / SGE_BMD_FLOAT_SCALE;
 	}
 
 	submodelRenderer->setDstPos(
-		x / SGE_BMD_FLOAT_SCALE,
-		y / SGE_BMD_FLOAT_SCALE
+		std::round(pos.x),
+		std::round(pos.y)
 	);
 	submodelRenderer->userDraw();
 }

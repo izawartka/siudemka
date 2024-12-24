@@ -18,7 +18,7 @@ void SGE_BMD_Destroyer::destroy(SGE_BMD_File& bmdFile)
 	// atlases block
 	for (int i = 0; i < bmdFile.atlases.atlasesCount; i++)
 	{
-		delete[] bmdFile.atlases.atlases[i].baseImageName;
+		delete[] bmdFile.atlases.atlases[i].baseImagePath;
 	}
 	delete[] bmdFile.atlases.atlases;
 

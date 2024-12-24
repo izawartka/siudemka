@@ -10,38 +10,42 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     m_sceneDef = new RZUF3_SceneDefinition();
     m_sceneDef->name = "siudemka";
 
+    // text renderer options //
+    RZUF3_TextRendererOptions textOptions;
+    textOptions.style.fontFilepath = MAIN_FONT;
+
     // the model //
     SGE_ModelControllerOptions modelOptions;
-    modelOptions.bmdFilepath = "assets/siudemka/model.bmd";
+    modelOptions.bmdFilepath = MODEL_PATH;
     modelOptions.centerAtOrigin = false;
 
-    RZUF3_ObjectDefinition objSiudemka;
-    objSiudemka.name = "siudemka";
-    objSiudemka.scripts = {
+    RZUF3_ObjectDefinition objModel;
+    objModel.name = MODEL_OBJ_NAME;
+    objModel.scripts = {
         new SGE_ModelController(modelOptions),
         new RotateModel("rot_base", true),
-        new RotateByDrag({0, 0, SIUDEMKA_WIDTH, SIUDEMKA_HEIGHT}),
-        new RZUF3_WindowAnchor({0.5, 0.5, -SIUDEMKA_WIDTH/2, -ALL_HEIGHT/2})
+        new RotateByDrag({0, 0, MODEL_WIDTH, MODEL_HEIGHT}),
+        new RZUF3_WindowAnchor({0.5, 0.5, -MODEL_WIDTH/2, -ALL_HEIGHT/2})
     };
-    m_sceneDef->objects.push_back(objSiudemka);
+    m_sceneDef->objects.push_back(objModel);
 
     // UI root //
     RZUF3_ObjectDefinition objUIRoot;
-    objUIRoot.name = "UIRoot";
+    objUIRoot.name = "ui_root";
     objUIRoot.scripts = {
-        new ModelOnlyOnKey(SDLK_LSHIFT, "siudemka", "UIRoot"),
-        new RZUF3_WindowAnchor({0.5, 0.5, -SIUDEMKA_WIDTH/2, -UI_OFFCENTER/2})
+        new ModelOnlyOnKey(SDLK_LSHIFT, MODEL_OBJ_NAME, "ui_root"),
+        new RZUF3_WindowAnchor({0.5, 0.5, -MODEL_WIDTH/2, -UI_OFFCENTER/2})
     };
     m_sceneDef->objects.push_back(objUIRoot);
 
     // autorotate checkbox //
     RZUF3_ObjectDefinition objAutorotate;
-    objAutorotate.name = "autorotateCheck";
-    objAutorotate.parentName = "UIRoot";
+    objAutorotate.name = "autorotate_check";
+    objAutorotate.parentName = "ui_root";
     objAutorotate.pos = RZUF3_Pos(16, 16);
     objAutorotate.scripts = {
-        new RZUF3_Checkbox({"assets/fonts/roboto-regular.ttf", "autorotate_label", true}),
-        new AutorotateByCheckbox("siudemka")
+        new RZUF3_Checkbox({MAIN_FONT, "autorotate_label", true}),
+        new AutorotateByCheckbox(MODEL_OBJ_NAME)
     };
     m_sceneDef->objects.push_back(objAutorotate);
 
@@ -56,12 +60,15 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     {
         int sliderY = 56 * j + 72;
 
+        textOptions.text = lightSideDisplayNames[j];
+        textOptions.dstRect = { 0, 0 };
+
         RZUF3_ObjectDefinition objLightSideLabel;
-        objLightSideLabel.name = "light" + lightSideNames[j] + "Label";
-        objLightSideLabel.parentName = "UIRoot";
+        objLightSideLabel.name = "light_" + lightSideNames[j] + "_label";
+        objLightSideLabel.parentName = "ui_root";
         objLightSideLabel.pos = RZUF3_Pos(16, sliderY - 24);
         objLightSideLabel.scripts = {
-			new RZUF3_TextRenderer("assets/fonts/roboto-regular.ttf", lightSideDisplayNames[j])
+			new RZUF3_TextRenderer(textOptions)
 		};
         m_sceneDef->objects.push_back(objLightSideLabel);
 
@@ -72,15 +79,18 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
             int sliderMin = i == 1 ? 0 : -1;
             int inputIndex = j * 6 + i * 2;
 
+            textOptions.text = lightDisplayNames[i];
+            textOptions.dstRect = { -47, -3 };
+
             RZUF3_ObjectDefinition objLightSlider;
-            objLightSlider.name = "light_" + lightName + "Slider";
-            objLightSlider.parentName = "UIRoot";
+            objLightSlider.name = "light_" + lightName + "_slider";
+            objLightSlider.parentName = "ui_root";
             objLightSlider.pos = RZUF3_Pos(sliderX, sliderY);
             objLightSlider.scripts = {
                 new RZUF3_Slider(sliderMin, 1, 0),
-                new InputIfUISoft("siudemka", "signal_" + lightName, -1, 255, 0.75),
-                new InputIfUISoft("siudemka", "light_" + lightName, 1, 255, 0.75),
-                new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", lightDisplayNames[i], -47, -3})
+                new InputIfUISoft(MODEL_OBJ_NAME, "signal_" + lightName, -1, 255, 0.75),
+                new InputIfUISoft(MODEL_OBJ_NAME, "light_" + lightName, 1, 255, 0.75),
+                new RZUF3_TextRenderer(textOptions)
             };
 
             m_sceneDef->objects.push_back(objLightSlider);
@@ -88,26 +98,32 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     }
 
     // pantograph A //
+    textOptions.text = "pant_a_label";
+    textOptions.dstRect = { -112, -3 };
+
     RZUF3_ObjectDefinition objPantographASlider;
-    objPantographASlider.name = "pantographASlider";
-    objPantographASlider.parentName = "UIRoot";
+    objPantographASlider.name = "pantograph_a_slider";
+    objPantographASlider.parentName = "ui_root";
     objPantographASlider.pos = RZUF3_Pos(16 + 112, 168);
     objPantographASlider.scripts = {
 		new RZUF3_Slider(0, 1, 0),
-		new InputIfUISoft("siudemka", "pant_f", 1, 6, 0.001),
-        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "pant_a_label", -112, -3})
+		new InputIfUISoft(MODEL_OBJ_NAME, "pant_f", 1, 6, 0.001),
+        new RZUF3_TextRenderer(textOptions)
 	};
     m_sceneDef->objects.push_back(objPantographASlider);
 
     // pantograph B //
+    textOptions.text = "pant_b_label";
+    textOptions.dstRect = { -112, -3 };
+
     RZUF3_ObjectDefinition objPantographBSlider;
-	objPantographBSlider.name = "pantographBSlider";
-    objPantographBSlider.parentName = "UIRoot";
+	objPantographBSlider.name = "pantograph_b_slider";
+    objPantographBSlider.parentName = "ui_root";
     objPantographBSlider.pos = RZUF3_Pos(16 + 112 + 187, 168);
     objPantographBSlider.scripts = {
         new RZUF3_Slider(0, 1, 0),
-        new InputIfUISoft("siudemka", "pant_r", 1, 6, 0.001),
-        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "pant_b_label", -112, -3})
+        new InputIfUISoft(MODEL_OBJ_NAME, "pant_r", 1, 6, 0.001),
+        new RZUF3_TextRenderer(textOptions)
     };
     m_sceneDef->objects.push_back(objPantographBSlider);
 
@@ -115,50 +131,62 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     bogieSliderStyle.width = 235;
 
     // door A //
+    textOptions.text = "door_a_label";
+    textOptions.dstRect = { -112, -3 };
+
     RZUF3_ObjectDefinition objDoorASlider;
-    objDoorASlider.name = "doorASlider";
-    objDoorASlider.parentName = "UIRoot";
+    objDoorASlider.name = "door_a_slider";
+    objDoorASlider.parentName = "ui_root";
     objDoorASlider.pos = RZUF3_Pos(16 + 112, 200);
     objDoorASlider.scripts = {
         new RZUF3_Slider(0, 1, 0),
-        new InputIfUISoft("siudemka", "door_f", 1, 6, 0.01),
-        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "door_a_label", -112, -3})
+        new InputIfUISoft(MODEL_OBJ_NAME, "door_f", 1, 6, 0.01),
+        new RZUF3_TextRenderer(textOptions)
     };
     m_sceneDef->objects.push_back(objDoorASlider);
 
     // door B //
+    textOptions.text = "door_b_label";
+    textOptions.dstRect = { -112, -3 };
+
     RZUF3_ObjectDefinition objDoorBSlider;
-    objDoorBSlider.name = "doorBSlider";
-    objDoorBSlider.parentName = "UIRoot";
+    objDoorBSlider.name = "door_b_slider";
+    objDoorBSlider.parentName = "ui_root";
     objDoorBSlider.pos = RZUF3_Pos(16 + 112 + 187, 200);
     objDoorBSlider.scripts = {
         new RZUF3_Slider(0, 1, 0),
-        new InputIfUISoft("siudemka", "door_r", 1, 6, 0.01),
-        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "door_b_label", -112, -3})
+        new InputIfUISoft(MODEL_OBJ_NAME, "door_r", 1, 6, 0.01),
+        new RZUF3_TextRenderer(textOptions)
     };
     m_sceneDef->objects.push_back(objDoorBSlider);
 
     // front bogie //
+    textOptions.text = "bogie_f_label";
+    textOptions.dstRect = { -112, -3 };
+
     RZUF3_ObjectDefinition objFrontBogieSlider;
-    objFrontBogieSlider.name = "frontBogieSlider";
-    objFrontBogieSlider.parentName = "UIRoot";
+    objFrontBogieSlider.name = "front_bogie_slider";
+    objFrontBogieSlider.parentName = "ui_root";
     objFrontBogieSlider.pos = RZUF3_Pos(16 + 112, 232);
     objFrontBogieSlider.scripts = {
         new RZUF3_Slider({-30, 30, 0, bogieSliderStyle}),
-        new InputByUI("siudemka", "rot_bogie_f", 120),
-		new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "bogie_f_label", -112, -3})
+        new InputByUI(MODEL_OBJ_NAME, "rot_bogie_f", 120),
+		new RZUF3_TextRenderer(textOptions)
 	};
 	m_sceneDef->objects.push_back(objFrontBogieSlider);
 
     // rear bogie //
+    textOptions.text = "bogie_r_label";
+    textOptions.dstRect = { -112, -3 };
+
     RZUF3_ObjectDefinition objRearBogieSlider;
-	objRearBogieSlider.name = "rearBogieSlider";
-    objRearBogieSlider.parentName = "UIRoot";
+	objRearBogieSlider.name = "rear_bogie_slider";
+    objRearBogieSlider.parentName = "ui_root";
     objRearBogieSlider.pos = RZUF3_Pos(16 + 112, 264);
     objRearBogieSlider.scripts = {
         new RZUF3_Slider({-30, 30, 0, bogieSliderStyle}),
-        new InputByUI("siudemka", "rot_bogie_r", 120),
-        new RZUF3_TextRenderer({"assets/fonts/roboto-regular.ttf", "bogie_r_label", -112, -3})
+        new InputByUI(MODEL_OBJ_NAME, "rot_bogie_r", 120),
+        new RZUF3_TextRenderer(textOptions)
     };
     m_sceneDef->objects.push_back(objRearBogieSlider);
 
@@ -167,10 +195,10 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
 	objAuthor.name = "author";
 
     RZUF3_TextRendererOptions authorOptions;
-    authorOptions.fontFilepath = "assets/fonts/roboto-regular.ttf";
+    authorOptions.style.fontFilepath = MAIN_FONT;
     authorOptions.text = "masuo 2024.06";
-    authorOptions.style.useLangFile = false;
-    authorOptions.style.alignment = RZUF3_Align_BottomRight;
+    authorOptions.useLangFile = false;
+    authorOptions.alignment = RZUF3_Align_BottomRight;
 
     objAuthor.scripts = {
         new RZUF3_TextRenderer(authorOptions),

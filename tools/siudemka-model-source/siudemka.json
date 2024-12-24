@@ -7,37 +7,37 @@
     "tilemaps": [
         {
             "name": "base",
-            "baseImage": "tmap_base.png",
+            "baseImage": "siudemka/tmap_base.png",
             "infoFile": "tmap_base.txt"
         },
         {
             "name": "lights",
-            "baseImage": "tmap_lights.png",
+            "baseImage": "siudemka/tmap_lights.png",
             "infoFile": "tmap_lights.txt"
         },
         {
             "name": "chassis",
-            "baseImage": "tmap_chassis.png",
+            "baseImage": "siudemka/tmap_chassis.png",
             "infoFile": "tmap_chassis.txt"
         },
         {
             "name": "bogie",
-            "baseImage": "tmap_bogie.png",
+            "baseImage": "siudemka/tmap_bogie.png",
             "infoFile": "tmap_bogie.txt"
         },
         {
             "name": "pant",
-            "baseImage": "tmap_pant.png",
+            "baseImage": "siudemka/tmap_pant.png",
             "infoFile": "tmap_pant.txt"
         },
         {
             "name": "coupler",
-            "baseImage": "tmap_coupler.png",
+            "baseImage": "siudemka/tmap_coupler.png",
             "infoFile": "tmap_coupler.txt"
         },
         {
             "name": "door",
-            "baseImage": "tmap_door.png",
+            "baseImage": "siudemka/tmap_door.png",
             "infoFile": "tmap_door.txt"
         }
     ],

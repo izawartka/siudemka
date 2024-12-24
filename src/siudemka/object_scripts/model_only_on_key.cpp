@@ -58,7 +58,7 @@ void ModelOnlyOnKey::onKeyDown(RZUF3_KeyDownEvent* event)
 	// g_game->setWindowSize(0, m_isHidden ? WINDOW_MO_HEIGHT : WINDOW_MIN_HEIGHT);
 
 	RZUF3_SetAnchorEvent modelSetAnchorEvent(m_isHidden ? 
-		RZUF3_Anchor(0.5, 0.5, -SIUDEMKA_WIDTH/2, -SIUDEMKA_HEIGHT/2) :
+		RZUF3_Anchor(0.5, 0.5, -MODEL_WIDTH/2, -MODEL_HEIGHT/2) :
 		m_modelDefAnchor);
 	modelEventsManager->dispatchEvent(&modelSetAnchorEvent);
 

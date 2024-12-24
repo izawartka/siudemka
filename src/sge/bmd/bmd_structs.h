@@ -2,7 +2,7 @@
 #include "../common.h"
 
 #define SGE_BMD_FLOAT_SCALE 20000
-#define SGE_BMD_VERSION 5
+#define SGE_BMD_VERSION 6
 
 struct SGE_BMD_InfoBlock {
 	uint16_t version;
@@ -39,8 +39,8 @@ struct SGE_BMD_TextureSetDef {
 };
 
 struct SGE_BMD_AtlasDef {
-	uint8_t baseImageNameLength;
-	char* baseImageName;
+	uint8_t baseImagePathLength;
+	char* baseImagePath;
 };
 
 struct SGE_BMD_AtlasesBlock {

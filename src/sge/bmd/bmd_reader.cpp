@@ -110,8 +110,8 @@ bool SGE_BMD_Reader::readAtlasesBlock(std::ifstream& file, SGE_BMD_AtlasesBlock&
 }
 
 bool SGE_BMD_Reader::readAtlasDef(std::ifstream& file, SGE_BMD_AtlasDef& atlasDef) {
-    _READ(atlasDef.baseImageNameLength);
-    _READ_STR(atlasDef.baseImageName, atlasDef.baseImageNameLength);
+    _READ(atlasDef.baseImagePathLength);
+    _READ_STR(atlasDef.baseImagePath, atlasDef.baseImagePathLength);
 
     return true;
 }

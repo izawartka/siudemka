@@ -3,7 +3,7 @@ import json
 import argparse
 import os
 
-_format_version_ = 5
+_format_version_ = 6
 _float_scale_ = 20000
 global_tilemap_indexes = {}
 global_tileset_indexes = {}

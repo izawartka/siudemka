@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common.h"
+#include "point.h"
+#include "point_utils.h"
 
 #include "assets/model_def.h"
 

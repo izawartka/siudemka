@@ -4,3 +4,5 @@
 
 #include <stdint.h>
 #include <fstream>
+
+#include "defs.h"
