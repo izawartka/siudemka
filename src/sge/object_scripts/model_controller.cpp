@@ -32,6 +32,7 @@ void SGE_ModelController::init()
 	_ADD_LISTENER(eventsManager, Draw);
 	RZUF3_EventsManager* objEventsManager = this->m_object->getEventsManager();
 	_ADD_LISTENER_CL(objEventsManager, SetModelInput, SGE);
+	_ADD_LISTENER_CL(objEventsManager, SetModelAngleInput, SGE);
 	_ADD_LISTENER_CL(objEventsManager, SetWorldPosition, SGE);
 }
 
@@ -41,6 +42,7 @@ void SGE_ModelController::deinit()
 	_REMOVE_LISTENER(eventsManager, Draw);
 	RZUF3_EventsManager* objEventsManager = this->m_object->getEventsManager();
 	_REMOVE_LISTENER_CL(objEventsManager, SetModelInput, SGE);
+	_REMOVE_LISTENER_CL(objEventsManager, SetModelAngleInput, SGE);
 	_REMOVE_LISTENER_CL(objEventsManager, SetWorldPosition, SGE);
 
 	removeModelDef();
@@ -77,7 +79,7 @@ uint16_t SGE_ModelController::getInputIndex(std::string name)
 	return it->second;
 }
 
-bool SGE_ModelController::setInput(uint16_t index, uint8_t value)
+bool SGE_ModelController::setInput(uint16_t index, uint16_t value)
 {
 	if (m_bmdFile == nullptr) return false;
 	if (index == 0xFFFF) return true;
@@ -99,14 +101,17 @@ bool SGE_ModelController::setInput(uint16_t index, uint8_t value)
 
 bool SGE_ModelController::setAngleInput(uint16_t index, double angle)
 {
-	int value = std::round(angle * SGE_ROTATION_SCALE);
-	if (value < 0) value += 120 * (-value / 120 + 1);
-	value %= 120;
+	if(m_bmdFile == nullptr) return false;
+	int fullAngle = m_bmdFile->info.fullAngle;
 
-	return setInput(index, (uint8_t)value);
+	int value = angle / (2 * M_PI) * fullAngle;
+	if (value < 0) value += fullAngle * (-value / fullAngle + 1);
+	value %= fullAngle;
+
+	return setInput(index, (uint16_t)value);
 }
 
-uint8_t SGE_ModelController::getInput(uint16_t index)
+uint16_t SGE_ModelController::getInput(uint16_t index)
 {
 	if (m_bmdFile == nullptr) return 0;
 	if (index == 0xFFFF) return 0;
@@ -138,9 +143,16 @@ void SGE_ModelController::drawSubmodels()
 {
 	if (!m_bmdFile) return;
 
-	uint8_t viewInputValue = getInput(m_bmdFile->views.indexByInputIndex);
-	uint8_t viewIndex = (viewInputValue * m_bmdFile->views.viewsCount / 120) % m_bmdFile->views.viewsCount;
-	SGE_BMD_ViewDef* view = &m_bmdFile->views.views[viewIndex];
+	uint16_t viewInputValue = getInput(m_bmdFile->views.indexByInputIndex);
+	SGE_BMD_ViewDef* view = nullptr;
+	uint8_t viewIndex = 0;
+	for (viewIndex = 0; viewIndex < m_bmdFile->views.viewsCount; viewIndex++)
+	{
+		view = &m_bmdFile->views.views[viewIndex];
+		if (view->endIndex >= viewInputValue) break;
+	}
+
+	if (view == nullptr) return;
 
 	for (int i = 0; i < view->submodelsCount; i++)
 	{
@@ -167,6 +179,12 @@ void SGE_ModelController::onSetModelInput(SGE_SetModelInputEvent* event)
 {
 	uint16_t inputIndex = getInputIndex(event->getName());
 	setInput(inputIndex, event->getValue());
+}
+
+void SGE_ModelController::onSetModelAngleInput(SGE_SetModelAngleInputEvent* event)
+{
+	uint16_t inputIndex = getInputIndex(event->getName());
+	setAngleInput(inputIndex, event->getAngle());
 }
 
 void SGE_ModelController::onSetWorldPosition(SGE_SetWorldPositionEvent* event)
@@ -208,7 +226,7 @@ void SGE_ModelController::createModelDef()
 		return;
 	}
 
-	m_inputs = new uint8_t[this->m_bmdFile->inputs.inputsCount]{ 0 };
+	m_inputs = new uint16_t[this->m_bmdFile->inputs.inputsCount]{ 0 };
 
 	for (int i = 0; i < this->m_bmdFile->inputs.inputsCount; i++)
 	{
@@ -261,9 +279,9 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
 	SGE_TextureSetRenderer* submodelRenderer = m_submodelRenderers[submodelIndex];
 
 	if (submodel->conditionInputIndex != 0) {
-		uint8_t conditionInputValue = getInput(submodel->conditionInputIndex);
+		uint16_t conditionInputValue = getInput(submodel->conditionInputIndex);
 
-		if (submodel->conditionValue == 255) {
+		if (submodel->conditionValue == 0xFFFF) {
 			submodelRenderer->setOpacity(conditionInputValue);
 		}
 		else if (submodel->conditionValue != conditionInputValue) {
@@ -271,14 +289,14 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
 		}
 	}
 
-	uint16_t index = getInput(submodel->indexByInputIndex);
-	uint8_t rot = getInput(submodel->rotByInputIndex);
+	int index = getInput(submodel->indexByInputIndex);
+	uint16_t rot = getInput(submodel->rotByInputIndex);
 
 	index += submodel->indexOffset;
 	index += rot;
 	index %= submodel->indexRange;
 
-	submodelRenderer->setIndex((uint8_t)index);
+	submodelRenderer->setIndex((uint16_t)index);
 
 	double rotRad = rot * M_PI / 60.0;
 	SGE_Point pos = m_worldPosition;
@@ -288,8 +306,8 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
 	double offY = submodel->y * sin(rotRad) + submodel->x * cos(rotRad);
 	offY *= yScale;
 
-	pos.x += (int)(offX / SGE_BMD_FLOAT_SCALE);
-	pos.y += (int)(offY / SGE_BMD_FLOAT_SCALE);
+	pos.x += offX / SGE_BMD_FLOAT_SCALE;
+	pos.y += offY / SGE_BMD_FLOAT_SCALE;
 
 	if (m_centerAtOrigin) {
 		pos.x -= (double)m_bmdFile->info.originX / SGE_BMD_FLOAT_SCALE;

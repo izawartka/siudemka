@@ -9,7 +9,7 @@ struct SGE_TextureSetRendererOptions {
 	SGE_BMD_TextureSetDef* setDef;
 	int x = 0;
 	int y = 0;
-	uint8_t index = 0;
+	uint16_t index = 0;
 	bool useOnDraw = true;
 	uint8_t opacity = 255;
 	RZUF3_Align alignment = RZUF3_Align_TopLeft;
@@ -29,7 +29,7 @@ public:
 	void setFilepath(std::string filepath);
 	void setTextureSet(SGE_BMD_TextureSetDef* setDef);
 	void setDstPos(int x, int y);
-	void setIndex(uint8_t index, bool force = false);
+	void setIndex(uint16_t index, bool force = false);
 	void setUseOnDraw(bool useOnDraw);
 	void setOpacity(uint8_t opacity) { m_options.opacity = opacity; }
 	void setAlign(RZUF3_Align alignment) { m_options.alignment = alignment; }
@@ -46,7 +46,7 @@ protected:
 	SGE_TextureSetRendererOptions m_options;
 	SDL_Texture* m_texture = nullptr;
 	bool m_hasOnDrawListener = false;
-	std::map<uint8_t, SGE_BMD_TextureDef*> m_textureDefs;
+	std::map<uint16_t, SGE_BMD_TextureDef*> m_textureDefs;
 	SGE_BMD_TextureDef* m_textureDef = nullptr;
 
 	_DECLARE_LISTENER(Draw);

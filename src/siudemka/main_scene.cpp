@@ -34,6 +34,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objUIRoot.name = "ui_root";
     objUIRoot.scripts = {
         new ModelOnlyOnKey(SDLK_LSHIFT, MODEL_OBJ_NAME, "ui_root"),
+        new FullscreenOnKey(SDLK_F11),
         new RZUF3_WindowAnchor({0.5, 0.5, -MODEL_WIDTH/2, -UI_OFFCENTER/2})
     };
     m_sceneDef->objects.push_back(objUIRoot);
@@ -43,6 +44,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     autorotateOptions.style.textStyle.fontFilepath = MAIN_FONT;
     autorotateOptions.style.defaultColors();
     autorotateOptions.labelText = "autorotate_label";
+    autorotateOptions.checked = true;
 
     RZUF3_ObjectDefinition objAutorotate;
     objAutorotate.name = "autorotate_check";

@@ -4,10 +4,10 @@
 
 class RZUF3_ObjectScript;
 
-#define AUTOROTATE_SPEED 0.01
-#define AUTOROTATE_ACC 0.00001f
+#define AUTOROTATE_SPEED 0.0005f
+#define AUTOROTATE_ACC 0.0000005f
 #define ROTATE_FRICTION 0.001f
-#define ROTATE_MIN_SPEED 0.001f
+#define ROTATE_MIN_SPEED 0.00005f
 
 class RotateModel : public RZUF3_ObjectScript {
 public:

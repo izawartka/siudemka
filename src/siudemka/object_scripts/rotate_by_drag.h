@@ -4,7 +4,7 @@
 
 class RZUF3_ObjectScript;
 
-#define DRAG_ACC_MULTIPLIER -0.00005f
+#define DRAG_ACC_MULTIPLIER -0.000005f
 
 class RotateByDrag : public RZUF3_ObjectScript {
 public:

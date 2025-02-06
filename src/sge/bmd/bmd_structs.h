@@ -2,7 +2,7 @@
 #include "../common.h"
 
 #define SGE_BMD_FLOAT_SCALE 20000
-#define SGE_BMD_VERSION 6
+#define SGE_BMD_VERSION 7
 
 struct SGE_BMD_InfoBlock {
 	uint16_t version;
@@ -10,6 +10,7 @@ struct SGE_BMD_InfoBlock {
 	char* name;
 	uint32_t originX; // in 1/SGE_BMD_FLOAT_SCALE of pixel
 	uint32_t originY; // in 1/SGE_BMD_FLOAT_SCALE of pixel
+	uint16_t fullAngle;
 };
 
 struct SGE_BMD_InputDef {
@@ -23,7 +24,7 @@ struct SGE_BMD_InputsBlock {
 };
 
 struct SGE_BMD_TextureDef {
-	uint8_t index;
+	uint16_t index;
 	uint16_t dstX;
 	uint16_t dstY;
 	uint16_t width;
@@ -34,7 +35,7 @@ struct SGE_BMD_TextureDef {
 
 struct SGE_BMD_TextureSetDef {
 	uint16_t atlasIndex;
-	uint8_t texturesCount;
+	uint16_t texturesCount;
 	SGE_BMD_TextureDef* textures;
 };
 
@@ -58,10 +59,10 @@ struct SGE_BMD_SubmodelDef {
 	char* name;
 	uint16_t textureSetIndex;
 	uint16_t indexByInputIndex;
-	uint8_t indexRange;
-	uint8_t indexOffset;
+	uint16_t indexRange;
+	uint16_t indexOffset;
 	uint16_t conditionInputIndex;
-	uint8_t conditionValue;
+	uint16_t conditionValue;
 	uint16_t rotByInputIndex;
 	int32_t x; // in 1/SGE_BMD_FLOAT_SCALE of pixel
 	int32_t y; // in 1/SGE_BMD_FLOAT_SCALE of pixel
@@ -73,6 +74,7 @@ struct SGE_BMD_SubmodelsBlock {
 };
 
 struct SGE_BMD_ViewDef {
+	uint16_t endIndex;
 	uint16_t submodelsCount;
 	uint16_t* submodels;
 };

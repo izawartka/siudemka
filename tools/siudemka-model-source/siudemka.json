@@ -2,7 +2,8 @@
     "info": {
         "name": "siudemka",
         "originX": 192.0000,
-        "originY": 151.6371
+        "originY": 151.6371,
+        "fullAngle": 120
     },    
     "tilemaps": [
         {
@@ -61,70 +62,70 @@
             "tilemap": "lights",
             "tileset": "light_r",
             "condition": "light_f_r",
-            "condition_value": 255,
+            "condition_value": -1,
             "range": 60
         },
         "light_f_l": {
             "tilemap": "lights",
             "tileset": "light_l",
             "condition": "light_f_l",
-            "condition_value": 255,
+            "condition_value": -1,
             "range": 60
         },
         "light_f_t": {
             "tilemap": "lights",
             "tileset": "light_t",
             "condition": "light_f_t",
-            "condition_value": 255,
+            "condition_value": -1,
             "range": 60
         },
         "light_r_r": {
             "tilemap": "lights",
             "tileset": "light_r",
             "condition": "light_r_r",
-            "condition_value": 255,
+            "condition_value": -1,
             "range": 60
         },
         "light_r_l": {
             "tilemap": "lights",
             "tileset": "light_l",
             "condition": "light_r_l",
-            "condition_value": 255,
+            "condition_value": -1,
             "range": 60
         },
         "light_r_t": {
             "tilemap": "lights",
             "tileset": "light_t",
             "condition": "light_r_t",
-            "condition_value": 255,
+            "condition_value": -1,
             "range": 60
         },
         "signal_r_r": {
             "tilemap": "lights",
             "tileset": "signal_r",
             "condition": "signal_r_r",
-            "condition_value": 255,
+            "condition_value": -1,
             "range": 60
         },
         "signal_r_l": {
             "tilemap": "lights",
             "tileset": "signal_l",
             "condition": "signal_r_l",
-            "condition_value": 255,
+            "condition_value": -1,
             "range": 60
         },
         "signal_f_r": {
             "tilemap": "lights",
             "tileset": "signal_r",
             "condition": "signal_f_r",
-            "condition_value": 255,
+            "condition_value": -1,
             "range": 60
         },
         "signal_f_l": {
             "tilemap": "lights",
             "tileset": "signal_l",
             "condition": "signal_f_l",
-            "condition_value": 255,
+            "condition_value": -1,
             "range": 60
         },
         "chassis_f": {
@@ -229,7 +230,7 @@
     },
     "views": [
         {
-            "_range": "0 - 59",
+            "end": 59,
             "submodels": [
                 "chassis_r",
                 "coupler_r",
@@ -255,7 +256,7 @@
             ]
         },
         {
-            "_range": "60 - 119",
+            "end": 119,
             "submodels": [
                 "chassis_f",
                 "coupler_f",

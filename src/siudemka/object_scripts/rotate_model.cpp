@@ -62,13 +62,8 @@ void RotateModel::onUpdate(RZUF3_UpdateEvent* event)
 
 	m_angle += m_speed * event->getDt();
 
-	int value = int(m_angle);
-	if(value < 0) value += 120 * (-value / 120 + 1);
-
-	value %= 120;
-
-	SGE_SetModelInputEvent setModelInputEvent(m_rotInputName, value);
-	m_objectEventsManager->dispatchEvent(&setModelInputEvent);
+	SGE_SetModelAngleInputEvent objEvent(m_rotInputName, m_angle);
+	m_objectEventsManager->dispatchEvent(&objEvent);
 
 	m_acc = 0;
 	m_isAccSet = false;

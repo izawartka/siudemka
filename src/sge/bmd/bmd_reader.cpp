@@ -53,7 +53,7 @@ bool SGE_BMD_Reader::readFile(std::ifstream& file, SGE_BMD_File& bmdFile) {
 		} else if(strcmp(header, "VIEW") == 0) {
 			readViewsBlock(file, bmdFile.views);
 		} else {
-			spdlog::warn("BMD file {}: unknown block {}", bmdFile.info.name, header);
+			spdlog::warn("BMD file {}: unknown block {} at {}", bmdFile.info.name, header, currentPos);
 			file.seekg(blockSize, std::ios::cur);
 		}
 
@@ -75,6 +75,7 @@ bool SGE_BMD_Reader::readInfoBlock(std::ifstream& file, SGE_BMD_InfoBlock& infoB
     _READ_STR(infoBlock.name, infoBlock.nameLength);
     _READ(infoBlock.originX);
     _READ(infoBlock.originY);
+    _READ(infoBlock.fullAngle);
 
     return true;
 }
@@ -192,6 +193,7 @@ bool SGE_BMD_Reader::readViewsBlock(std::ifstream& file, SGE_BMD_ViewsBlock& vie
 }
 
 bool SGE_BMD_Reader::readViewDef(std::ifstream& file, SGE_BMD_ViewDef& viewDef) {
+    _READ(viewDef.endIndex);
     _READ(viewDef.submodelsCount);
     viewDef.submodels = new uint16_t[viewDef.submodelsCount];
     _READ_ARR(viewDef.submodels, viewDef.submodelsCount);

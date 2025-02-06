@@ -87,7 +87,7 @@ void SGE_TextureSetRenderer::setDstPos(int x, int y)
 	m_options.y = y;
 }
 
-void SGE_TextureSetRenderer::setIndex(uint8_t index, bool force)
+void SGE_TextureSetRenderer::setIndex(uint16_t index, bool force)
 {
 	if(m_options.index == index && !force) return;
 
@@ -164,6 +164,6 @@ void SGE_TextureSetRenderer::cacheTextureDefs()
 	for(int i = 0; i < m_options.setDef->texturesCount; i++)
 	{
 		SGE_BMD_TextureDef* textureDef = &m_options.setDef->textures[i];
-		m_textureDefs.insert(std::pair<uint8_t, SGE_BMD_TextureDef*>(textureDef->index, textureDef));
+		m_textureDefs.insert(std::pair<uint16_t, SGE_BMD_TextureDef*>(textureDef->index, textureDef));
 	}
 }

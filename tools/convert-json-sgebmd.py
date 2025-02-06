@@ -3,10 +3,11 @@ import json
 import argparse
 import os
 
-_format_version_ = 6
+_format_version_ = 7
 _float_scale_ = 20000
 global_tilemap_indexes = {}
 global_tileset_indexes = {}
+global_full_angle = 120
 
 def get_tileset_indexes(tilemaps_json):
     return {tilemap['name']: i for i, tilemap in enumerate(tilemaps_json)}
@@ -33,17 +34,20 @@ def get_submodel_indexes(submodels_json):
 
 
 def write_info_block(file, info_json):
+    global global_full_angle
     model_name = info_json['name'].encode('utf-8')
     model_name_length = len(model_name)
 
     file.write(b'INFO')
-    block_size = 3 + model_name_length + 8
+    block_size = 3 + model_name_length + 10
     file.write(struct.pack('I', block_size))
     file.write(struct.pack('H', _format_version_))
     file.write(struct.pack('B', model_name_length))
     file.write(model_name)
     file.write(struct.pack('I', int(info_json.get('originX', 0) * _float_scale_)))
     file.write(struct.pack('I', int(info_json.get('originY', 0) * _float_scale_)))
+    global_full_angle = info_json.get('fullAngle', 120)
+    file.write(struct.pack('H', global_full_angle))
 
 
 def write_inputs_block(file, input_indexes):
@@ -143,15 +147,16 @@ def get_tilesets_data(tilesets):
     for tileset in tilesets:
         tilesets_data += struct.pack('H', tileset['tilemap_index'])
         tiles = tileset['tiles']
-        tilesets_data += struct.pack('B', len(tiles))
+        tilesets_data += struct.pack('H', len(tiles))
         for tile in tiles:
-            tilesets_data += struct.pack('B', tile['index'])
+            tilesets_data += struct.pack('H', tile['index'])
             tilesets_data += struct.pack('6H', *tile['data'])
     
     return tilesets_data
 
 
 def write_submodels_block(file, submodels_json, input_indexes):
+    global global_full_angle
     submodels_data = b''
     for [submodel_name, submodel] in submodels_json.items():
         name = submodel_name.encode('utf-8')
@@ -164,6 +169,8 @@ def write_submodels_block(file, submodels_json, input_indexes):
         condition = input_indexes.get(submodel.get('condition', ''), 0)
         rot_by = input_indexes.get(submodel.get('rot_by', ''), 0xFFFF)
         condition_value = int(submodel.get('condition_value', 0))
+        if condition_value < 0:
+            condition_value = 0xFFFF + condition_value + 1
 
         # temporary until bogies' rotation is calculated by track position
         if submodel.get('index_by', '') == '' and rot_by != 0xFFFF:
@@ -173,10 +180,10 @@ def write_submodels_block(file, submodels_json, input_indexes):
             'B', name_length) + name + struct.pack(
             'H', tileset_index) + struct.pack(
             'H', index_by) + struct.pack(
-            'B', submodel.get('range', 120)) + struct.pack(
-            'B', submodel.get('index_offset', 0)) + struct.pack(
+            'H', submodel.get('range', global_full_angle)) + struct.pack(
+            'H', submodel.get('index_offset', 0)) + struct.pack(
             'H', condition) + struct.pack(
-            'B', condition_value) + struct.pack(
+            'H', condition_value) + struct.pack(
             'H', rot_by) + struct.pack(
             'i', int(submodel.get('pos_x', 0) * _float_scale_)) + struct.pack(
             'i', int(submodel.get('pos_y', 0) * _float_scale_))
@@ -203,7 +210,8 @@ def write_views_block(file, views_json, submodel_indexes):
 
 def get_view_def_data(view_def_json, submodel_indexes):
     submodels_count = len(view_def_json['submodels'])
-    view_def_data = struct.pack('H', submodels_count)
+    view_def_data = struct.pack('H', view_def_json.get('end', 0))
+    view_def_data += struct.pack('H', submodels_count)
     for submodel_name in view_def_json['submodels']:
         submodel_index = submodel_indexes[submodel_name]
         view_def_data += struct.pack('H', submodel_index)

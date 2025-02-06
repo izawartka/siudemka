@@ -11,6 +11,7 @@ The latest binaries are available in the Releases section on the right. Just dow
 
 ### Keybindings
 `LEFT SHIFT` - toggle between normal view and model-only view
+`F11` - toggle fullscreen mode
 
 ### Dependencies
 RZUF3 requires the following libraries: `SDL2`, `SDL2_image`, `SDL2_ttf` (min. >=2.0.18, recommended >=2.20.0), `spdlog`.

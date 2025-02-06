@@ -1,6 +1,6 @@
 #include "input_by_ui.h"
 
-InputByUI::InputByUI(std::string targetObjectName, std::string inputName, uint8_t range)
+InputByUI::InputByUI(std::string targetObjectName, std::string inputName, uint16_t range)
 {
 	mp_targetObjectName = targetObjectName;
 	mp_inputName = inputName;

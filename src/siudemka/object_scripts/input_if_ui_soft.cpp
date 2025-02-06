@@ -1,6 +1,6 @@
 #include "input_if_ui_soft.h"
 
-InputIfUISoft::InputIfUISoft(std::string targetObjectName, std::string inputName, int condition, uint8_t targetValue, double step)
+InputIfUISoft::InputIfUISoft(std::string targetObjectName, std::string inputName, int condition, uint16_t targetValue, double step)
 {
 	mp_targetObjectName = targetObjectName;
 	mp_inputName = inputName;
