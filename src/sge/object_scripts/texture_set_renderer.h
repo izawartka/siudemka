@@ -34,6 +34,11 @@ public:
 	void setOpacity(uint8_t opacity) { m_options.opacity = opacity; }
 	void setAlign(RZUF3_Align alignment) { m_options.alignment = alignment; }
 
+	void getRect(SDL_Rect& rect);
+	void getPosition(int& x, int& y) const;
+	SDL_Texture* getTexture() const { return m_texture; }
+	SDL_Rect getSrcRect() const;
+
 protected:
 	void onDraw(RZUF3_DrawEvent* event);
 

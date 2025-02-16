@@ -44,12 +44,7 @@ void SGE_TextureSetRenderer::draw()
 	if (m_textureDef == nullptr) return;
 	if (m_options.opacity == 0) return;
 
-	SDL_Rect srcRect = {
-		m_textureDef->srcX,
-		m_textureDef->srcY,
-		m_textureDef->width,
-		m_textureDef->height
-	};
+	SDL_Rect srcRect = getSrcRect();
 
 	SDL_Rect dstRect = {
 		m_options.x + m_textureDef->dstX,
@@ -116,6 +111,35 @@ void SGE_TextureSetRenderer::setUseOnDraw(bool useOnDraw)
 		_REMOVE_LISTENER(eventsManager, Draw);
 		m_hasOnDrawListener = false;
 	}
+}
+
+void SGE_TextureSetRenderer::getRect(SDL_Rect& rect)
+{
+	if (m_textureDef == nullptr) return;
+
+	rect.x = m_options.x + m_textureDef->dstX;
+	rect.y = m_options.y + m_textureDef->dstY;
+	rect.w = m_textureDef->width;
+	rect.h = m_textureDef->height;
+}
+
+void SGE_TextureSetRenderer::getPosition(int& x, int& y) const
+{
+	x = m_options.x;
+	y = m_options.y;
+}
+
+SDL_Rect SGE_TextureSetRenderer::getSrcRect() const
+{
+	SDL_Rect rect = { 0, 0, 0, 0 };
+	if (m_textureDef == nullptr) return rect;
+
+	rect.x = m_textureDef->srcX;
+	rect.y = m_textureDef->srcY;
+	rect.w = m_textureDef->width;
+	rect.h = m_textureDef->height;
+
+	return rect;
 }
 
 void SGE_TextureSetRenderer::onDraw(RZUF3_DrawEvent* event)

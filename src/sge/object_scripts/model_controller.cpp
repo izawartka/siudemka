@@ -20,16 +20,15 @@ SGE_ModelController::~SGE_ModelController()
 
 void SGE_ModelController::init()
 {
-	m_centerAtOrigin = mp_options.centerAtOrigin;
-	m_layer = mp_options.layer;
-	m_worldPosition = mp_options.worldPosition;
+	m_options = mp_options;
 	setFilepath(mp_options.bmdFilepath);
 
-	uint16_t rotBaseIndex = getInputIndex("rot_base");
-	setInput(rotBaseIndex, mp_options.startRotBase);
+	uint16_t baseRotationIndex = getInputIndex("rot_base");
+	setInput(baseRotationIndex, mp_options.startBaseRotation);
 
 	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_ADD_LISTENER(eventsManager, Draw);
+
 	RZUF3_EventsManager* objEventsManager = this->m_object->getEventsManager();
 	_ADD_LISTENER_CL(objEventsManager, SetModelInput, SGE);
 	_ADD_LISTENER_CL(objEventsManager, SetModelAngleInput, SGE);
@@ -40,11 +39,13 @@ void SGE_ModelController::deinit()
 {
 	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_REMOVE_LISTENER(eventsManager, Draw);
+
 	RZUF3_EventsManager* objEventsManager = this->m_object->getEventsManager();
 	_REMOVE_LISTENER_CL(objEventsManager, SetModelInput, SGE);
 	_REMOVE_LISTENER_CL(objEventsManager, SetModelAngleInput, SGE);
 	_REMOVE_LISTENER_CL(objEventsManager, SetWorldPosition, SGE);
 
+	removeCacheTexture();
 	removeModelDef();
 	removeSubmodelControllers();
 
@@ -55,9 +56,47 @@ void SGE_ModelController::setFilepath(std::string filepath)
 {
 	removeModelDef();
 	removeSubmodelControllers();
-	m_bmdFilepath = filepath;
+	m_options.bmdFilepath = filepath;
 	createModelDef();
 	createSubmodelControllers();
+
+	m_cacheTextureNeedsUpdate = true;
+}
+
+bool SGE_ModelController::setInput(uint16_t index, uint16_t value)
+{
+	if (m_bmdFile == nullptr) return false;
+	if (index == 0xFFFF) return true;
+
+	if (index > m_bmdFile->inputs.inputsCount) {
+		spdlog::error(
+			"Input #{} does not exist in the model {}",
+			index,
+			m_options.bmdFilepath
+		);
+
+		return false;
+	}
+
+	if (m_inputs[index] != value) {
+		m_cacheTextureNeedsUpdate = true;
+	}
+
+	m_inputs[index] = value;
+
+	return true;
+}
+
+bool SGE_ModelController::setAngleInput(uint16_t index, double angle)
+{
+	if(m_bmdFile == nullptr) return false;
+	int fullAngle = m_bmdFile->info.fullAngle;
+
+	int value = std::round(angle / (2.0 * M_PI) * fullAngle);
+	if (value < 0) value += fullAngle * (-value / fullAngle + 1);
+	value %= fullAngle;
+
+	return setInput(index, (uint16_t)value);
 }
 
 uint16_t SGE_ModelController::getInputIndex(std::string name)
@@ -77,38 +116,6 @@ uint16_t SGE_ModelController::getInputIndex(std::string name)
 	}
 
 	return it->second;
-}
-
-bool SGE_ModelController::setInput(uint16_t index, uint16_t value)
-{
-	if (m_bmdFile == nullptr) return false;
-	if (index == 0xFFFF) return true;
-
-	if (index > m_bmdFile->inputs.inputsCount) {
-		spdlog::error(
-			"Input #{} does not exist in the model {}",
-			index,
-			m_bmdFilepath
-		);
-
-		return false;
-	}
-
-	m_inputs[index] = value;
-
-	return true;
-}
-
-bool SGE_ModelController::setAngleInput(uint16_t index, double angle)
-{
-	if(m_bmdFile == nullptr) return false;
-	int fullAngle = m_bmdFile->info.fullAngle;
-
-	int value = angle / (2 * M_PI) * fullAngle;
-	if (value < 0) value += fullAngle * (-value / fullAngle + 1);
-	value %= fullAngle;
-
-	return setInput(index, (uint16_t)value);
 }
 
 uint16_t SGE_ModelController::getInput(uint16_t index)
@@ -131,34 +138,28 @@ uint16_t SGE_ModelController::getInput(uint16_t index)
 
 void SGE_ModelController::setLayer(int layer)
 {
-	m_layer = layer;
+	m_options.layer = layer;
 }
 
 void SGE_ModelController::setPosition(SGE_Point position)
 {
-	m_worldPosition = position;
+	m_options.worldPosition = position;
 }
 
-void SGE_ModelController::drawSubmodels()
+void SGE_ModelController::setUseCacheTexture(bool useCache)
 {
-	if (!m_bmdFile) return;
+	m_options.cacheTexture = useCache;
+	m_cacheTextureNeedsUpdate = true;
 
-	uint16_t viewInputValue = getInput(m_bmdFile->views.indexByInputIndex);
-	SGE_BMD_ViewDef* view = nullptr;
-	uint8_t viewIndex = 0;
-	for (viewIndex = 0; viewIndex < m_bmdFile->views.viewsCount; viewIndex++)
-	{
-		view = &m_bmdFile->views.views[viewIndex];
-		if (view->endIndex >= viewInputValue) break;
-	}
+	if(!useCache) removeCacheTexture();
+}
 
-	if (view == nullptr) return;
+void SGE_ModelController::draw()
+{
+	if (m_bmdFile == nullptr) return;
 
-	for (int i = 0; i < view->submodelsCount; i++)
-	{
-		uint16_t submodelIndex = view->submodels[i];
-		drawSubmodel(submodelIndex);
-	}
+	if (m_options.cacheTexture) drawFromCache();
+	else drawNoCache();
 }
 
 void SGE_ModelController::onDraw(RZUF3_DrawEvent* event)
@@ -166,13 +167,13 @@ void SGE_ModelController::onDraw(RZUF3_DrawEvent* event)
 	if (m_bmdFile == nullptr) return;
 	if (g_sgeWorldDrawQueue == nullptr || !mp_options.useDrawQueue)
 	{
-		drawSubmodels();
+		draw();
 		return;
 	}
 
-	SGE_Point screenPos = m_worldPosition;
+	SGE_Point screenPos = m_options.worldPosition;
 	SGE_PointUtils::worldToScreen(screenPos);
-	g_sgeWorldDrawQueue->addToQueue(this, m_layer, screenPos.z);
+	g_sgeWorldDrawQueue->addToQueue(this, m_options.layer, screenPos.z);
 }
 
 void SGE_ModelController::onSetModelInput(SGE_SetModelInputEvent* event)
@@ -200,29 +201,28 @@ void SGE_ModelController::removeModelDef()
 	m_inputNames.clear();
 
 	RZUF3_AssetsManager* assetsManager = g_scene->getAssetsManager();
-	assetsManager->removeAsset(m_bmdFilepath);
+	assetsManager->removeAsset(m_options.bmdFilepath);
 	m_bmdFile = nullptr;
 }
 
 void SGE_ModelController::createModelDef()
 {
 	if (this->m_object == nullptr) return;
-	if (this->m_bmdFilepath.empty()) return;
 	if (this->m_bmdFile != nullptr) return;
 
 	RZUF3_AssetsManager* assetsManager = g_scene->getAssetsManager();
 
 	RZUF3_AssetDefinition assetDefinition;
-	assetDefinition.filepath = m_bmdFilepath;
+	assetDefinition.filepath = m_options.bmdFilepath;
 	assetDefinition.factory = SGE_ModelDef::getInstance;
 
 	if (!assetsManager->addAsset(assetDefinition)) return;
 
-	this->m_bmdFile = (SGE_BMD_File*)assetsManager->getAssetContent(m_bmdFilepath);
+	this->m_bmdFile = (SGE_BMD_File*)assetsManager->getAssetContent(m_options.bmdFilepath);
 
 	if (this->m_bmdFile == nullptr)
 	{
-		spdlog::error("BMD File {} could not be loaded", this->m_bmdFilepath);
+		spdlog::error("BMD File {} could not be loaded", m_options.bmdFilepath);
 		return;
 	}
 
@@ -271,9 +271,119 @@ void SGE_ModelController::createSubmodelControllers()
 	}
 }
 
+void SGE_ModelController::removeCacheTexture()
+{
+	m_cacheTextureNeedsUpdate = true;
+	m_cacheTextureBounds = { 0, 0, 0, 0 };
+
+	if(!m_cacheTexture) return;
+	SDL_DestroyTexture(m_cacheTexture);
+	m_cacheTexture = nullptr;
+}
+
+void SGE_ModelController::createCacheTexture()
+{
+	if(m_cacheTexture) return;
+	m_cacheTextureNeedsUpdate = false;
+	m_cacheTextureBounds = { 0, 0, 0, 0 };
+
+	SGE_BMD_ViewDef* view = getCurrentView();
+	if (view == nullptr) return;
+
+	SDL_Rect& bounds = m_cacheTextureBounds;
+	bounds = { INT_MAX, INT_MAX, INT_MIN, INT_MIN };
+	SDL_Rect tempRect{};
+
+	for (int i = 0; i < view->submodelsCount; i++)
+	{
+		uint16_t submodelIndex = view->submodels[i];
+		updateSubmodel(submodelIndex, &tempRect);
+
+		if(tempRect.w == 0 || tempRect.h == 0) continue;
+
+		if (tempRect.x < bounds.x) bounds.x = tempRect.x;
+		if (tempRect.y < bounds.y) bounds.y = tempRect.y;
+		if (tempRect.x + tempRect.w > bounds.w) bounds.w = tempRect.x + tempRect.w;
+		if (tempRect.y + tempRect.h > bounds.h) bounds.h = tempRect.y + tempRect.h;
+	}
+
+	// convert x1, y1, x2, y2 to x, y, w, h
+	bounds.w -= bounds.x;
+	bounds.h -= bounds.y;
+
+	if (bounds.w == 0 || bounds.h == 0) return;
+
+	SDL_Renderer* renderer = g_renderer->getSDLRenderer();
+	SDL_Texture* tempTexture = SDL_CreateTexture(
+		renderer,
+		SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+		bounds.w, bounds.h
+	);
+
+	SDL_Texture* prevTarget = SDL_GetRenderTarget(renderer);
+	SDL_SetRenderTarget(renderer, tempTexture);
+	bool prevUseObjectPos = g_renderer->getUseObjectPos();
+	g_renderer->setUseObjectPos(false);
+	g_renderer->setAlign(RZUF3_Align_TopLeft);
+
+	for (int i = 0; i < view->submodelsCount; i++)
+	{
+		uint16_t submodelIndex = view->submodels[i];
+		drawSubmodel(submodelIndex, true);
+	}
+
+	if (!g_renderer->createStaticTexture(m_cacheTexture, bounds.w, bounds.h)) {
+		spdlog::error("SGE_ModelController: Failed to create combined texture");
+	}
+
+	g_renderer->setUseObjectPos(prevUseObjectPos);
+	SDL_SetRenderTarget(renderer, prevTarget);
+
+	SDL_DestroyTexture(tempTexture);
+}
+
+void SGE_ModelController::drawNoCache()
+{
+	SGE_BMD_ViewDef* view = getCurrentView();
+	if (view == nullptr) return;
+
+	for (int i = 0; i < view->submodelsCount; i++)
+	{
+		uint16_t submodelIndex = view->submodels[i];
+		updateSubmodel(submodelIndex, nullptr);
+		drawSubmodel(submodelIndex, false);
+	}
+}
+
+void SGE_ModelController::drawFromCache()
+{
+	if (m_cacheTextureNeedsUpdate)
+	{
+		removeCacheTexture();
+		createCacheTexture();
+	}
+
+	if (!m_cacheTexture) return;
+
+	g_renderer->setUseObjectPos(true);
+	g_renderer->setAlign(RZUF3_Align_TopLeft);
+
+	SGE_Point screenPos = m_options.worldPosition;
+	SGE_PointUtils::worldToScreen(screenPos);
+
+	SDL_Rect dstRect = {
+		m_cacheTextureBounds.x + screenPos.x,
+		m_cacheTextureBounds.y + screenPos.y,
+		m_cacheTextureBounds.w,
+		m_cacheTextureBounds.h
+	};
+
+	g_renderer->drawTexture(m_object, m_cacheTexture, nullptr, dstRect);
+}
+
 const double yScale = cos(SGE_CAMERA_ISO_ANGLE);
 
-void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
+void SGE_ModelController::updateSubmodel(uint16_t submodelIndex, SDL_Rect* rect)
 {
 	SGE_BMD_SubmodelDef* submodel = &m_bmdFile->submodels.submodels[submodelIndex];
 	SGE_TextureSetRenderer* submodelRenderer = m_submodelRenderers[submodelIndex];
@@ -284,39 +394,91 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex)
 		if (submodel->conditionValue == 0xFFFF) {
 			submodelRenderer->setOpacity(conditionInputValue);
 		}
-		else if (submodel->conditionValue != conditionInputValue) {
-			return;
+		else {
+			bool conditionMet = submodel->conditionValue == conditionInputValue;
+			submodelRenderer->setOpacity(conditionMet ? 0xFF : 0x00);
+
+			if (!conditionMet) {
+				if(rect != nullptr) *rect = { 0, 0, 0, 0 };
+				return;
+			}
 		}
 	}
 
 	int index = getInput(submodel->indexByInputIndex);
-	uint16_t rot = getInput(submodel->rotByInputIndex);
+	int rot = getInput(submodel->rotByInputIndex);
 
-	index += submodel->indexOffset;
 	index += rot;
+	index += submodel->indexOffset;
 	index %= submodel->indexRange;
 
 	submodelRenderer->setIndex((uint16_t)index);
 
-	double rotRad = rot * M_PI / 60.0;
-	SGE_Point pos = m_worldPosition;
-	SGE_PointUtils::worldToScreen(pos);
+	double rotRad = ((double)rot / m_bmdFile->info.fullAngle) * 2.0 * M_PI;
 
-	double offX = submodel->y * cos(rotRad) - submodel->x * sin(rotRad);
-	double offY = submodel->y * sin(rotRad) + submodel->x * cos(rotRad);
-	offY *= yScale;
+	double submodelX = (double)submodel->x / SGE_BMD_FLOAT_SCALE;
+	double submodelY = (double)submodel->y / SGE_BMD_FLOAT_SCALE;
 
-	pos.x += offX / SGE_BMD_FLOAT_SCALE;
-	pos.y += offY / SGE_BMD_FLOAT_SCALE;
+	SGE_Point pos;
+	pos.x = submodelY * cos(rotRad) - submodelX * sin(rotRad);
+	pos.y = submodelY * sin(rotRad) + submodelX * cos(rotRad);
+	pos.y *= yScale;
 
-	if (m_centerAtOrigin) {
-		pos.x -= (double)m_bmdFile->info.originX / SGE_BMD_FLOAT_SCALE;
-		pos.y -= (double)m_bmdFile->info.originY / SGE_BMD_FLOAT_SCALE;
+	if (m_options.centerAtOrigin) {
+		pos.x -= ((double)m_bmdFile->info.originX / SGE_BMD_FLOAT_SCALE);
+		pos.y -= ((double)m_bmdFile->info.originY / SGE_BMD_FLOAT_SCALE);
 	}
 
 	submodelRenderer->setDstPos(
 		std::round(pos.x),
 		std::round(pos.y)
 	);
+
+	if (rect != nullptr) submodelRenderer->getRect(*rect);
+}
+
+void SGE_ModelController::drawSubmodel(uint16_t submodelIndex, bool forCache)
+{
+	SGE_BMD_SubmodelDef* submodel = &m_bmdFile->submodels.submodels[submodelIndex];
+	SGE_TextureSetRenderer* submodelRenderer = m_submodelRenderers[submodelIndex];
+
+	int x, y;
+	submodelRenderer->getPosition(x, y);
+
+	// if drawing for cache, subtract the cache texture bounds
+	if (forCache) {
+		x -= m_cacheTextureBounds.x;
+		y -= m_cacheTextureBounds.y;
+
+		submodelRenderer->setDstPos(x, y);
+	}
+	// if drawing normally, add the world position
+	else {
+		SGE_Point screenPos = m_options.worldPosition;
+		SGE_PointUtils::worldToScreen(screenPos);
+
+		// round to prevent submodels from woubleing
+		submodelRenderer->setDstPos(
+			x + std::round(screenPos.x), 
+			y + std::round(screenPos.y)
+		);
+	}
+
 	submodelRenderer->draw();
+}
+
+SGE_BMD_ViewDef* SGE_ModelController::getCurrentView()
+{
+	if (m_bmdFile == nullptr) return nullptr;
+
+	uint16_t viewInputValue = getInput(m_bmdFile->views.indexByInputIndex);
+	SGE_BMD_ViewDef* view = nullptr;
+	uint8_t viewIndex = 0;
+	for (viewIndex = 0; viewIndex < m_bmdFile->views.viewsCount; viewIndex++)
+	{
+		view = &m_bmdFile->views.views[viewIndex];
+		if (view->endIndex >= viewInputValue) break;
+	}
+
+	return view;
 }

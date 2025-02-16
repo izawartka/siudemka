@@ -39,7 +39,7 @@ void SGE_WorldDrawQueue::onDraw(RZUF3_DrawEvent* event)
 		{
 			for (SGE_ModelController* modelController : queue)
 			{
-				modelController->drawSubmodels();
+				modelController->draw();
 			}
 		}
 	}
