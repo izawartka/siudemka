@@ -57,8 +57,14 @@ void RotateModel::onUpdate(RZUF3_UpdateEvent* event)
 		m_speed = 0;
 	}
 
+	double oldSpeed = m_speed;
+
 	m_speed += m_acc * event->getDt();
-	m_speed -= m_speed * ROTATE_FRICTION * event->getDt();
+	m_speed -= m_speed * ROTATE_FRICTION;
+
+	if (m_doAutorotate && oldSpeed <= AUTOROTATE_SPEED && m_speed > AUTOROTATE_SPEED && !m_isAccSet) {
+		m_speed = AUTOROTATE_SPEED;
+	}
 
 	m_angle += m_speed * event->getDt();
 
