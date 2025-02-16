@@ -7,3 +7,6 @@
 #define SGE_CAMERA_ISO_ANGLE (75.0 * M_PI / 180.0)
 
 #define SGE_TEXTURES_ROOT "assets/textures/"
+
+#define SGE_INT_MAX ((int)0x7FFFFFFF)
+#define SGE_INT_MIN ((int)0x80000000)

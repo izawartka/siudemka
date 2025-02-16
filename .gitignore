@@ -34,6 +34,7 @@
 /.vs
 bin/siudemka.pdb
 bin/siudemka
+bin/*.zip
 CMakeCache.txt
 CMakeFiles/
 Makefile

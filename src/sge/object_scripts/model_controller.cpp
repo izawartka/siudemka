@@ -291,7 +291,7 @@ void SGE_ModelController::createCacheTexture()
 	if (view == nullptr) return;
 
 	SDL_Rect& bounds = m_cacheTextureBounds;
-	bounds = { INT_MAX, INT_MAX, INT_MIN, INT_MIN };
+	bounds = { SGE_INT_MAX, SGE_INT_MAX, SGE_INT_MIN, SGE_INT_MIN };
 	SDL_Rect tempRect{};
 
 	for (int i = 0; i < view->submodelsCount; i++)
@@ -372,8 +372,8 @@ void SGE_ModelController::drawFromCache()
 	SGE_PointUtils::worldToScreen(screenPos);
 
 	SDL_Rect dstRect = {
-		m_cacheTextureBounds.x + screenPos.x,
-		m_cacheTextureBounds.y + screenPos.y,
+		m_cacheTextureBounds.x + (int)(screenPos.x + 0.5),
+		m_cacheTextureBounds.y + (int)(screenPos.y + 0.5),
 		m_cacheTextureBounds.w,
 		m_cacheTextureBounds.h
 	};
@@ -460,8 +460,8 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex, bool forCache)
 
 		// round to prevent submodels from woubleing
 		submodelRenderer->setDstPos(
-			x + std::round(screenPos.x), 
-			y + std::round(screenPos.y)
+			x + (int)(screenPos.x + 0.5),
+			y + (int)(screenPos.y + 0.5)
 		);
 	}
 
