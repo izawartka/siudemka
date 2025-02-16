@@ -2,7 +2,7 @@
 #include "../common.h"
 
 #define SGE_BMD_FLOAT_SCALE 20000
-#define SGE_BMD_VERSION 7
+#define SGE_BMD_VERSION 8
 
 struct SGE_BMD_InfoBlock {
 	uint16_t version;
@@ -57,6 +57,7 @@ struct SGE_BMD_TextureSetsBlock {
 struct SGE_BMD_SubmodelDef {
 	uint8_t nameLength;
 	char* name;
+	uint8_t indexDivisor;
 	uint16_t textureSetIndex;
 	uint16_t indexByInputIndex;
 	uint16_t indexRange;

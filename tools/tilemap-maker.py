@@ -1,9 +1,9 @@
 import argparse
 import os
 from PIL import Image, ImageDraw
+from rectpack import newPacker
 
 args = None
-
 
 class TilemapImage:
     def __init__(self, file_name, crop_x, crop_y, width, height, x=0, y=0):
@@ -18,26 +18,8 @@ class TilemapImage:
     def __str__(self):
         return f"{self.file_name} {self.crop_x} {self.crop_y} {self.width} {self.height} {self.x} {self.y}"
 
-    def check_collision(self, other):
-        if self == other:
-            return False
 
-        if self.x > other.x + other.width:
-            return False
-        
-        if self.x + self.width < other.x:
-            return False
-
-        if self.y > other.y + other.height:
-            return False
-
-        if self.y + self.height < other.y:
-            return False
-
-        return True
-
-
-def get_size_sorted_images(input_info_file_path):
+def get_images(input_info_file_path):
     with open(input_info_file_path, "r") as f:
         lines = f.readlines()
 
@@ -53,61 +35,70 @@ def get_size_sorted_images(input_info_file_path):
             int(parts[4])
         ))
 
-    images.sort(key=lambda x: (x.height, x.width), reverse=True)
-
-    return images  
+    return images
 
 
-def get_packed_tilemap(size_sorted_images, force_height=0):
-    images = size_sorted_images
-    tilemap_images = []
-    tilemap_width = 0
-    tilemap_height = force_height if force_height > 0 else images[0].height
+def get_packed_tilemap(images):    
+    global args
+    # Create a new packer
+    packer = newPacker(rotation=False)
 
-    for image in images:
-        tilemap_images.append(image)
+    # Add the rectangles to the packer
+    for (index, image) in enumerate(images):
+        packer.add_rect(image.width, image.height, index)
 
-        print(f"Processing image {image.file_name} ({len(tilemap_images)}/{len(images)})...")
+    tot_width = sum(image.width for image in images)
+    tot_height = max(image.height for image in images)
+    base_size = max(tot_width, tot_height)
+    if args.base_size:
+        base_size = args.base_size
+    base_size_sqrt = base_size ** 0.5
 
-        while True:
-            collision = False
+    packer.add_bin(base_size_sqrt, base_size_sqrt, count=1)
 
-            for other_image in tilemap_images:
-                if image.check_collision(other_image):
-                    suggested_y = other_image.y + other_image.height
-                    image.y = suggested_y if suggested_y != image.y else image.y + 1
-                    collision = True
-                    break
+    # Pack the rectangles
+    packer.pack()
 
-            if not collision:
-                break
+    if len(packer.rect_list()) != len(images):
+        print("Some images could not be packed")
+        return None
 
-            if image.y + image.height > tilemap_height:
-                image.y = 0
-                image.x += 1
+    packed_images = []
+    for rect in packer.rect_list():
+        image = images[rect[5]]
 
-        if image.x + image.width > tilemap_width:
-            tilemap_width = image.x + image.width
+        packed_images.append(TilemapImage(
+            image.file_name,
+            image.crop_x,
+            image.crop_y,
+            image.width,
+            image.height,
+            rect[1],
+            rect[2]
+        ))
 
-    return tilemap_images, tilemap_width, tilemap_height
+    return packed_images
 
 
 def process_images():
     print("Reading input info file...")
-    sorted_images = get_size_sorted_images(args.input_info_file)
+    images = get_images(args.input_info_file)
+    images_count = len(images)
 
-    if args.height > 0 and args.height < sorted_images[0].height:
-        print(f"!!! Forced height cannot be less than the height of the largest image ({sorted_images[0].height})")
+    print("Creating tilemap from " + str(images_count) + " images...")
+    tilemap_info = get_packed_tilemap(images)
+
+    if not tilemap_info:
+        print("Failed to create tilemap")
         return
 
-    print("Creating tilemap...")
-    tilemap_info = get_packed_tilemap(sorted_images, args.height)   
+    # Calculate the size of the tilemap
+    max_x = max(image.x + image.width for image in tilemap_info)
+    max_y = max(image.y + image.height for image in tilemap_info)
 
-    print("Creating tilemap image...")
-    tilemap_image = Image.new("RGBA", (tilemap_info[1], tilemap_info[2]))
-    draw = ImageDraw.Draw(tilemap_image)
+    tilemap_image = Image.new("RGBA", (max_x, max_y), (0, 0, 0, 0))
 
-    for image in tilemap_info[0]:
+    for image in tilemap_info:
         input_image_path = os.path.join(args.input_dir, image.file_name)
         input_image = Image.open(input_image_path)
         tilemap_image.paste(input_image, (image.x, image.y))
@@ -116,10 +107,10 @@ def process_images():
 
     print("Saving info file...")
     with open(args.output_info_file, "w") as f:
-        for image in tilemap_info[0]:
+        for image in tilemap_info:
             f.write(f"{image}\n")
 
-    print("Tilemap created successfully")  
+    print("Tilemap created successfully")
 
 
 def main():
@@ -130,12 +121,12 @@ def main():
     parser.add_argument("output_file", type=str, help="File to save the tilemap image")
     parser.add_argument("input_info_file", type=str, help="File containing the input image crop information")
     parser.add_argument("output_info_file", type=str, help="File to save tilemap information")
+    parser.add_argument("--base-size", type=int, help="Base size of the tilemap")
     parser.add_argument("--ignore-exceptions", action="store_true", help="Stop the script if an exception occurs")
-    parser.add_argument("--height", type=int, default=0, help="Height of the tilemap (default: 0, auto)")
     args = parser.parse_args()
 
-    if args.height < 0:
-        print("Height must be at least 0")
+    if args.base_size and args.base_size < 1:
+        print("Base size must be greater than 0")
         return
 
     if not os.path.exists(args.input_dir) or not os.path.isdir(args.input_dir):
@@ -174,6 +165,7 @@ def main():
             return
 
     process_images()
+
 
 if __name__ == "__main__":
     main()

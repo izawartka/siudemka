@@ -167,6 +167,7 @@ bool SGE_BMD_Reader::readSubmodelsBlock(std::ifstream& file, SGE_BMD_SubmodelsBl
 bool SGE_BMD_Reader::readSubmodelDef(std::ifstream& file, SGE_BMD_SubmodelDef& submodelDef) {
     _READ(submodelDef.nameLength);
     _READ_STR(submodelDef.name, submodelDef.nameLength);
+    _READ(submodelDef.indexDivisor);
     _READ(submodelDef.textureSetIndex);
     _READ(submodelDef.indexByInputIndex);
     _READ(submodelDef.indexRange);

@@ -3,7 +3,7 @@
         "name": "siudemka",
         "originX": 192.0000,
         "originY": 151.6371,
-        "fullAngle": 120
+        "fullAngle": 360
     },    
     "tilemaps": [
         {
@@ -17,11 +17,6 @@
             "infoFile": "tmap_lights.txt"
         },
         {
-            "name": "chassis",
-            "baseImage": "siudemka/tmap_chassis.png",
-            "infoFile": "tmap_chassis.txt"
-        },
-        {
             "name": "bogie",
             "baseImage": "siudemka/tmap_bogie.png",
             "infoFile": "tmap_bogie.txt"
@@ -30,11 +25,6 @@
             "name": "pant",
             "baseImage": "siudemka/tmap_pant.png",
             "infoFile": "tmap_pant.txt"
-        },
-        {
-            "name": "coupler",
-            "baseImage": "siudemka/tmap_coupler.png",
-            "infoFile": "tmap_coupler.txt"
         },
         {
             "name": "door",
@@ -46,108 +36,108 @@
         "base": {
             "tilemap": "base",
             "tileset": "base",
-            "range": 60
+            "range": 180
         },
         "roofelems": {
             "tilemap": "base",
             "tileset": "roofelems",
-            "range": 120
+            "range": 360
         },
         "antenna": {
             "tilemap": "base",
             "tileset": "antenna",
-            "range": 120
+            "range": 360
+        },
+        "chassis_f": {
+            "tilemap": "chassis",
+            "tileset": "chassis",
+            "range": 360
+        },
+        "chassis_m": {
+            "tilemap": "chassis",
+            "tileset": "chassis_m",
+            "range": 180
+        },
+        "chassis_r": {
+            "tilemap": "chassis",
+            "tileset": "chassis",
+            "range": 360,
+            "index_offset": 180
         },
         "light_f_r": {
             "tilemap": "lights",
             "tileset": "light_r",
             "condition": "light_f_r",
             "condition_value": -1,
-            "range": 60
+            "range": 180
         },
         "light_f_l": {
             "tilemap": "lights",
             "tileset": "light_l",
             "condition": "light_f_l",
             "condition_value": -1,
-            "range": 60
+            "range": 180
         },
         "light_f_t": {
             "tilemap": "lights",
             "tileset": "light_t",
             "condition": "light_f_t",
             "condition_value": -1,
-            "range": 60
+            "range": 180
         },
         "light_r_r": {
             "tilemap": "lights",
             "tileset": "light_r",
             "condition": "light_r_r",
             "condition_value": -1,
-            "range": 60
+            "range": 180
         },
         "light_r_l": {
             "tilemap": "lights",
             "tileset": "light_l",
             "condition": "light_r_l",
             "condition_value": -1,
-            "range": 60
+            "range": 180
         },
         "light_r_t": {
             "tilemap": "lights",
             "tileset": "light_t",
             "condition": "light_r_t",
             "condition_value": -1,
-            "range": 60
+            "range": 180
         },
         "signal_r_r": {
             "tilemap": "lights",
             "tileset": "signal_r",
             "condition": "signal_r_r",
             "condition_value": -1,
-            "range": 60
+            "range": 180
         },
         "signal_r_l": {
             "tilemap": "lights",
             "tileset": "signal_l",
             "condition": "signal_r_l",
             "condition_value": -1,
-            "range": 60
+            "range": 180
         },
         "signal_f_r": {
             "tilemap": "lights",
             "tileset": "signal_r",
             "condition": "signal_f_r",
             "condition_value": -1,
-            "range": 60
+            "range": 180
         },
         "signal_f_l": {
             "tilemap": "lights",
             "tileset": "signal_l",
             "condition": "signal_f_l",
             "condition_value": -1,
-            "range": 60
-        },
-        "chassis_f": {
-            "tilemap": "chassis",
-            "tileset": "chassis",
-            "range": 120
-        },
-        "chassis_m": {
-            "tilemap": "chassis",
-            "tileset": "chassis_m",
-            "range": 60
-        },
-        "chassis_r": {
-            "tilemap": "chassis",
-            "tileset": "chassis",
-            "range": 120,
-            "index_offset": 60
+            "range": 180
         },
         "bogie_f": {
             "tilemap": "bogie",
             "tileset": "bogie",
-            "range": 120,
+            "range": 360,
             "index_by": "rot_bogie_f",
             "rot_by": "rot_base",
             "pos_y": 96.1554
@@ -155,43 +145,43 @@
         "bogie_r": {
             "tilemap": "bogie",
             "tileset": "bogie",
-            "range": 120,
+            "range": 360,
             "index_by": "rot_bogie_r",
-            "index_offset": 60,
+            "index_offset": 180,
             "rot_by": "rot_base",
             "pos_y": -96.1554
         },
         "pantbase_f": {
             "tilemap": "pant",
-            "tileset": "pantbase",
-            "range": 120,
+            "tileset": "pant_base",
+            "range": 360,
             "rot_by": "rot_base",
             "pos_y": 76.9807
         },
         "pantbase_r": {
             "tilemap": "pant",
-            "tileset": "pantbase",
-            "range": 120,
+            "tileset": "pant_base",
+            "range": 360,
             "rot_by": "rot_base",
             "pos_y": -76.9807
         },
         "pant_f_{}": {
-            "series_size": 7,
+            "series_size": 8,
             "series_start": 0,
             "tilemap": "pant",
             "tileset": "pant_{}",
-            "range": 60,
+            "range": 180,
             "condition": "pant_f",
             "condition_value": "{}",
             "rot_by": "rot_base",
             "pos_y": 76.9807
         },
         "pant_r_{}": {
-            "series_size": 7,
+            "series_size": 8,
             "series_start": 0,
             "tilemap": "pant",
             "tileset": "pant_{}",
-            "range": 60,
+            "range": 180,
             "condition": "pant_r",
             "condition_value": "{}",
             "rot_by": "rot_base",
@@ -202,7 +192,7 @@
             "series_start": 1,
             "tilemap": "door",
             "tileset": "door_{}",
-            "range": 120,
+            "range": 360,
             "condition": "door_f",
             "condition_value": "{}"
         },
@@ -211,35 +201,22 @@
             "series_start": 1,
             "tilemap": "door",
             "tileset": "door_{}",
-            "range": 120,
+            "range": 360,
             "condition": "door_r",
             "condition_value": "{}",
-            "index_offset": 60
-        },
-        "coupler_f": {
-            "tilemap": "coupler",
-            "tileset": "coupler_off",
-            "range": 120
-        },
-        "coupler_r": {
-            "tilemap": "coupler",
-            "tileset": "coupler_off",
-            "range": 120,
-            "index_offset": 60
+            "index_offset": 180
         }
     },
     "views": [
         {
-            "end": 59,
+            "end": 179,
             "submodels": [
                 "chassis_r",
-                "coupler_r",
                 "bogie_r",
                 "chassis_m",
                 "bogie_f",
-                "chassis_f",
-                "coupler_f",
                 "base",
+                "chassis_f",
                 "door_r_{}",
                 "door_f_{}",
                 "pantbase_r",
@@ -256,16 +233,14 @@
             ]
         },
         {
-            "end": 119,
+            "end": 359,
             "submodels": [
                 "chassis_f",
-                "coupler_f",
                 "bogie_f",
                 "chassis_m",
                 "bogie_r",
-                "chassis_r",
-                "coupler_r",
                 "base",
+                "chassis_r",
                 "door_f_{}",
                 "door_r_{}",
                 "antenna",

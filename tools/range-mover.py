@@ -12,7 +12,7 @@ def process_images():
     filenames = os.listdir(args.input_dir)
     filenames.sort()
     filenames = [f for f in filenames if f.startswith(args.old_prefix)]
-
+    
     name = filenames[0].split('.')[0].replace(args.old_prefix, '')
     old_start_id = int(name)
     old_leading_zeros = len(name)
@@ -22,6 +22,10 @@ def process_images():
 
     for filename in filenames:
         ext = filename.split('.')[1]
+        if ext in args.ignore_extensions:
+            print(f"Ignoring {filename} - extension matches ignore list")
+            continue
+
         old_id = int(filename.split('.')[0].replace(args.old_prefix, ''))
         new_id = new_start + (old_id - old_start_id)
         new_name = str(new_id).zfill(leading_zeros if leading_zeros > 0 else old_leading_zeros)
@@ -47,6 +51,7 @@ def main():
     parser = argparse.ArgumentParser(description="Batch rename range of files with a new range")
     parser.add_argument("input_dir", type=str, help="Directory containing the input files")
     parser.add_argument("output_dir", type=str, help="Directory to save the output files")
+    parser.add_argument("--ignore-extensions", type=str, nargs="+", default=['txt'], help="List of extensions to ignore (default: txt)")
     parser.add_argument("--ignore-exceptions", action="store_true", help="Stop the script if an exception occurs")
     parser.add_argument("--new-start", type=int, default=-1, help=" (default: -1, auto) Start of the new range")
     parser.add_argument("--prefix", type=str, default="", help="Prefix to add to the new range")

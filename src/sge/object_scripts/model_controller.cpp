@@ -409,6 +409,7 @@ void SGE_ModelController::updateSubmodel(uint16_t submodelIndex, SDL_Rect* rect)
 	int rot = getInput(submodel->rotByInputIndex);
 
 	index += rot;
+	index /= submodel->indexDivisor;
 	index += submodel->indexOffset;
 	index %= submodel->indexRange;
 

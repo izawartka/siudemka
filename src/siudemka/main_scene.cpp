@@ -114,7 +114,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objPantographASlider.pos = RZUF3_Pos(16 + 112, 168);
     objPantographASlider.scripts = {
 		new RZUF3_Slider(0, 1, 0),
-		new InputIfUISoft(MODEL_OBJ_NAME, "pant_f", 1, 6, 0.001),
+		new InputIfUISoft(MODEL_OBJ_NAME, "pant_f", 1, 7, 0.001),
         new RZUF3_TextRenderer(textOptions)
 	};
     m_sceneDef->objects.push_back(objPantographASlider);
@@ -129,7 +129,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objPantographBSlider.pos = RZUF3_Pos(16 + 112 + 187, 168);
     objPantographBSlider.scripts = {
         new RZUF3_Slider(0, 1, 0),
-        new InputIfUISoft(MODEL_OBJ_NAME, "pant_r", 1, 6, 0.001),
+        new InputIfUISoft(MODEL_OBJ_NAME, "pant_r", 1, 7, 0.001),
         new RZUF3_TextRenderer(textOptions)
     };
     m_sceneDef->objects.push_back(objPantographBSlider);
@@ -177,7 +177,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objFrontBogieSlider.pos = RZUF3_Pos(16 + 112, 232);
     objFrontBogieSlider.scripts = {
         new RZUF3_Slider({-30, 30, 0, bogieSliderStyle}),
-        new InputByUI(MODEL_OBJ_NAME, "rot_bogie_f", 120),
+        new InputByUI(MODEL_OBJ_NAME, "rot_bogie_f", 360),
 		new RZUF3_TextRenderer(textOptions)
 	};
 	m_sceneDef->objects.push_back(objFrontBogieSlider);
@@ -192,7 +192,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     objRearBogieSlider.pos = RZUF3_Pos(16 + 112, 264);
     objRearBogieSlider.scripts = {
         new RZUF3_Slider({-30, 30, 0, bogieSliderStyle}),
-        new InputByUI(MODEL_OBJ_NAME, "rot_bogie_r", 120),
+        new InputByUI(MODEL_OBJ_NAME, "rot_bogie_r", 360),
         new RZUF3_TextRenderer(textOptions)
     };
     m_sceneDef->objects.push_back(objRearBogieSlider);

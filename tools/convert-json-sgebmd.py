@@ -3,7 +3,7 @@ import json
 import argparse
 import os
 
-_format_version_ = 7
+_format_version_ = 8
 _float_scale_ = 20000
 global_tilemap_indexes = {}
 global_tileset_indexes = {}
@@ -12,6 +12,8 @@ global_full_angle = 120
 def get_tileset_indexes(tilemaps_json):
     return {tilemap['name']: i for i, tilemap in enumerate(tilemaps_json)}
 
+def get_output_name(json_data):
+    return json_data['info']['name'] + '.bmd'
 
 def get_input_indexes(submodels_json):
     input_indexes = {
@@ -166,6 +168,7 @@ def write_submodels_block(file, submodels_json, input_indexes):
             print(global_tileset_indexes)
             raise Exception(f"Tileset {submodel['tileset']} not found")
         index_by = input_indexes.get(submodel.get('index_by', ''), 0)
+        index_divisor = submodel.get('index_divisor', 1)
         condition = input_indexes.get(submodel.get('condition', ''), 0)
         rot_by = input_indexes.get(submodel.get('rot_by', ''), 0xFFFF)
         condition_value = int(submodel.get('condition_value', 0))
@@ -178,6 +181,7 @@ def write_submodels_block(file, submodels_json, input_indexes):
 
         submodels_data += struct.pack(
             'B', name_length) + name + struct.pack(
+            'B', index_divisor) + struct.pack(
             'H', tileset_index) + struct.pack(
             'H', index_by) + struct.pack(
             'H', submodel.get('range', global_full_angle)) + struct.pack(
@@ -290,7 +294,7 @@ def resolve_series(json_data):
 def __main__():
     parser = argparse.ArgumentParser(description="Convert JSON data to SGEBMD binary format")
     parser.add_argument("input_json", type=str, help="Input JSON file")
-    parser.add_argument("output_bin", type=str, help="Output binary file")
+    parser.add_argument("--output", type=str, help="Output file name")
     parser.add_argument("--assets-dir", type=str, help="Directory containing additional assets mentioned in the JSON")
     args = parser.parse_args()
 
@@ -308,9 +312,13 @@ def __main__():
             print(f"Error: Failed to parse JSON - {e}")
             return
         
+    if not args.output:
+        args.output = get_output_name(json_data)
+        print(f"Output file name not provided, will be saved as \"{args.output}\".")
+        
     resolve_series(json_data)
 
-    write_binary_file(json_data, args.output_bin, args.assets_dir)
+    write_binary_file(json_data, args.output, args.assets_dir)
 
     print("Done")
 

@@ -50,7 +50,7 @@ def save_crop_info(filename, bbox):
     crop_info_file.write(text)
 
 
-def process_image(filename):
+def process_image(filename, tolerance):
     if stop_flag:
         return None
 
@@ -65,7 +65,7 @@ def process_image(filename):
     input_image = Image.open(input_image_path)
     image = input_image.copy()
 
-    if args.tolerance > 0:
+    if tolerance > 0:
         # Convert image to numpy array for processing
         image_data = np.array(image)
 
@@ -80,7 +80,7 @@ def process_image(filename):
         sizes = scipy.ndimage.sum(alpha_channel > 0, labeled, range(num_features + 1))
 
         # Create a mask of small regions
-        small_regions_mask = sizes < args.tolerance
+        small_regions_mask = sizes < tolerance
         small_regions_mask = small_regions_mask[labeled]
         
         # Remove small regions from the alpha channel
@@ -95,15 +95,26 @@ def process_image(filename):
     # Get the bounding box of the non-transparent region
     bbox = image.getbbox()
 
+    # Check if there is a non-transparent region
+    if not bbox:
+        print(f"No non-transparent region found in image {filename}")
+
+        if args.decrease_tolerance and tolerance > 0:
+            new_tolerance = tolerance - 1
+            print(f"Trying with tolerance = {new_tolerance}")
+            return process_image(filename, new_tolerance)
+        else:
+            return None
+
     # Add margin to the bounding box
-    if bbox and args.margin > 0:
+    if args.margin > 0:
         bbox = (bbox[0] - args.margin, bbox[1] - args.margin, bbox[2] + args.margin, bbox[3] + args.margin)
 
     # Create the output image
     out_image = create_output_image(input_image, bbox)
 
     if not out_image:
-        print("No non-transparent region found in image {filename}")
+        print("Could not create output image")
         return None
 
     # Save the image
@@ -159,7 +170,7 @@ def process_images():
         crop_info_file = open(crop_info_file_path, "w")
 
     with ThreadPoolExecutor(max_workers=real_num_threads) as executor:
-        future_to_filename = {executor.submit(process_image, filename): filename for filename in filenames}
+        future_to_filename = {executor.submit(process_image, filename, args.tolerance): filename for filename in filenames}
 
         for future in future_to_filename:
             if stop_flag:
@@ -190,6 +201,7 @@ def main():
     parser.add_argument("--margin", type=int, default=0, help="Add a margin around the bounding box (default: 0)")
     parser.add_argument("--threads", type=int, default=16, help="Number of threads to use for processing images (default: 16)")
     parser.add_argument("--ignore-exceptions", action="store_true", help="Stop the script if an exception occurs")
+    parser.add_argument("--decrease-tolerance", action="store_true", help="Decrease tolerance if no non-transparent region is found")
     parser.add_argument("--info-file", type=str, help="File to save crop information")
     args = parser.parse_args()
 
