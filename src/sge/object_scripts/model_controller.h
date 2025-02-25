@@ -5,7 +5,6 @@
 
 class RZUF3_ObjectScript;
 class SGE_TextureSetRenderer;
-class SGE_WorldTransform;
 
 struct SGE_ModelControllerOptions {
 	std::string bmdFilepath;
@@ -17,7 +16,7 @@ struct SGE_ModelControllerOptions {
 	bool cacheTexture = true;
 };
 
-class SGE_ModelController : public RZUF3_ObjectScript {
+class SGE_ModelController : public SGE_DrawQueueScript {
 public:
 	SGE_ModelController(std::string filepath);
 	SGE_ModelController(SGE_ModelControllerOptions options);
@@ -70,7 +69,6 @@ protected:
 	std::map<std::string, uint16_t> m_inputNames;
 	std::vector<SGE_TextureSetRenderer*> m_submodelRenderers;
 
-	double m_angle = 0.0;
 	_DECLARE_LISTENER(Draw)
 	_DECLARE_LISTENER(SetModelInput)
 	_DECLARE_LISTENER(SetModelAngleInput)

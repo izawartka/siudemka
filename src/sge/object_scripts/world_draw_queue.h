@@ -1,7 +1,9 @@
 #pragma once
 #include "object_scripts.h"
 
-class SGE_ModelController;
+class SGE_DrawQueueScript;
+
+typedef std::map<int, std::map<double, std::vector<SGE_DrawQueueScript*>>> SGE_DrawQueue;
 
 class SGE_WorldDrawQueue : public RZUF3_ObjectScript {
 public:
@@ -11,11 +13,11 @@ public:
 	void init();
 	void deinit();
 
-	void addToQueue(SGE_ModelController* modelController, int layer, double z);
+	void addToQueue(SGE_DrawQueueScript* modelController, int layer, double z);
 protected:
 	void onDraw(RZUF3_DrawEvent* event);
 
-	std::map<int, std::map<double, std::vector<SGE_ModelController*>>> m_queue;
+	SGE_DrawQueue m_queue;
 
 	_DECLARE_LISTENER(Draw);
 };

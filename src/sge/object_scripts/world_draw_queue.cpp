@@ -1,5 +1,4 @@
 #include "world_draw_queue.h"
-#include "model_controller.h"
 
 SGE_WorldDrawQueue* g_sgeWorldDrawQueue = nullptr;
 
@@ -26,7 +25,7 @@ void SGE_WorldDrawQueue::deinit()
 	_REMOVE_LISTENER(eventsManager, Draw);
 }
 
-void SGE_WorldDrawQueue::addToQueue(SGE_ModelController* modelController, int layer, double z)
+void SGE_WorldDrawQueue::addToQueue(SGE_DrawQueueScript* modelController, int layer, double z)
 {
 	m_queue[layer][z].push_back(modelController);
 }
@@ -37,11 +36,12 @@ void SGE_WorldDrawQueue::onDraw(RZUF3_DrawEvent* event)
 	{
 		for (auto& [z, queue] : queue)
 		{
-			for (SGE_ModelController* modelController : queue)
+			for (SGE_DrawQueueScript* modelController : queue)
 			{
 				modelController->draw();
 			}
 		}
 	}
+
 	m_queue.clear();
 }
