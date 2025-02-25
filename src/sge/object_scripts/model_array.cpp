@@ -351,32 +351,12 @@ void SGE_ModelArray::createCacheTexture()
 
 	if (bounds.w == 0 || bounds.h == 0) return;
 
-	SDL_Renderer* renderer = g_renderer->getSDLRenderer();
-	SDL_Texture* tempTexture = SDL_CreateTexture(
-		renderer,
-		SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-		bounds.w, bounds.h
-	);
-
-	SDL_Texture* prevTarget = SDL_GetRenderTarget(renderer);
-	SDL_SetRenderTarget(renderer, tempTexture);
-	bool prevUseObjectPos = g_renderer->getUseObjectPos();
-	g_renderer->setUseObjectPos(false);
-	g_renderer->setAlign(RZUF3_Align_TopLeft);
-
-	for (int i = 0; i < m_items.size(); i++)
-	{
-		drawSubmodelsForItem(i);
-	}
-
-	if (!g_renderer->createStaticTexture(m_cacheTexture, bounds.w, bounds.h)) {
-		spdlog::error("SGE_ModelArray: Failed to create combined texture");
-	}
-
-	g_renderer->setUseObjectPos(prevUseObjectPos);
-	SDL_SetRenderTarget(renderer, prevTarget);
-
-	SDL_DestroyTexture(tempTexture);
+	g_renderer->createCacheTexture(m_cacheTexture, bounds.w, bounds.h, [this, bounds]() {
+		for (int i = 0; i < m_items.size(); i++)
+		{
+			drawSubmodelsForItem(i);
+		}
+	});
 }
 
 void SGE_ModelArray::updateSubmodelsForItem(int itemIndex, SDL_Rect& bounds)
