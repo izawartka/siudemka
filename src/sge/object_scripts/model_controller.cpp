@@ -22,9 +22,7 @@ void SGE_ModelController::init()
 {
 	m_options = mp_options;
 	setFilepath(mp_options.bmdFilepath);
-
-	uint16_t baseRotationIndex = getInputIndex("rot_base");
-	setInput(baseRotationIndex, mp_options.startBaseRotation);
+	setStartBaseRotation();
 
 	RZUF3_EventsManager* eventsManager = g_scene->getEventsManager();
 	_ADD_LISTENER(eventsManager, Draw);
@@ -381,8 +379,6 @@ void SGE_ModelController::drawFromCache()
 	g_renderer->drawTexture(m_object, m_cacheTexture, nullptr, dstRect);
 }
 
-const double yScale = cos(SGE_CAMERA_ISO_ANGLE);
-
 void SGE_ModelController::updateSubmodel(uint16_t submodelIndex, SDL_Rect* rect)
 {
 	SGE_BMD_SubmodelDef* submodel = &m_bmdFile->submodels.submodels[submodelIndex];
@@ -421,9 +417,8 @@ void SGE_ModelController::updateSubmodel(uint16_t submodelIndex, SDL_Rect* rect)
 	double submodelY = (double)submodel->y / SGE_BMD_FLOAT_SCALE;
 
 	SGE_Point pos;
-	pos.x = submodelY * cos(rotRad) - submodelX * sin(rotRad);
-	pos.y = submodelY * sin(rotRad) + submodelX * cos(rotRad);
-	pos.y *= yScale;
+	pos.x += submodelY * cos(rotRad) - submodelX * sin(rotRad);
+	pos.y += (submodelY * sin(rotRad) + submodelX * cos(rotRad)) * SGE_Y_SCALE;
 
 	if (m_options.centerAtOrigin) {
 		pos.x -= ((double)m_bmdFile->info.originX / SGE_BMD_FLOAT_SCALE);
@@ -466,6 +461,19 @@ void SGE_ModelController::drawSubmodel(uint16_t submodelIndex, bool forCache)
 	}
 
 	submodelRenderer->draw();
+}
+
+void SGE_ModelController::setStartBaseRotation()
+{
+	if (m_bmdFile == nullptr) return;
+
+	uint16_t baseRotationIndex = getInputIndex(SGE_BASE_ROTATION_NAME);
+	if (m_options.startBaseRotationRad != 0.0) {
+		setAngleInput(baseRotationIndex, m_options.startBaseRotationRad);
+	}
+	else {
+		setInput(baseRotationIndex, m_options.startBaseRotation);
+	}
 }
 
 SGE_BMD_ViewDef* SGE_ModelController::getCurrentView()

@@ -10,6 +10,7 @@ struct SGE_ModelControllerOptions {
 	std::string bmdFilepath;
 	bool centerAtOrigin = true;
 	uint16_t startBaseRotation = 0;
+	double startBaseRotationRad = 0.0;
 	int layer = 0;
 	SGE_Point worldPosition = { 0, 0, 0 };
 	bool useDrawQueue = true;
@@ -55,6 +56,8 @@ protected:
 	void drawFromCache();
 	void updateSubmodel(uint16_t submodelIndex, SDL_Rect* rect);
 	void drawSubmodel(uint16_t submodelIndex, bool forCache);
+
+	void setStartBaseRotation();
 	SGE_BMD_ViewDef* getCurrentView();
 
 	SGE_ModelControllerOptions mp_options;
