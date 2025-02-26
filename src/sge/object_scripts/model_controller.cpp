@@ -28,6 +28,7 @@ void SGE_ModelController::init()
 	_ADD_LISTENER(eventsManager, Draw);
 
 	RZUF3_EventsManager* objEventsManager = this->m_object->getEventsManager();
+	_ADD_LISTENER_CL(objEventsManager, GetModelController, SGE);
 	_ADD_LISTENER_CL(objEventsManager, SetModelInput, SGE);
 	_ADD_LISTENER_CL(objEventsManager, SetModelAngleInput, SGE);
 	_ADD_LISTENER_CL(objEventsManager, SetWorldPosition, SGE);
@@ -39,6 +40,7 @@ void SGE_ModelController::deinit()
 	_REMOVE_LISTENER(eventsManager, Draw);
 
 	RZUF3_EventsManager* objEventsManager = this->m_object->getEventsManager();
+	_REMOVE_LISTENER_CL(objEventsManager, GetModelController, SGE);
 	_REMOVE_LISTENER_CL(objEventsManager, SetModelInput, SGE);
 	_REMOVE_LISTENER_CL(objEventsManager, SetModelAngleInput, SGE);
 	_REMOVE_LISTENER_CL(objEventsManager, SetWorldPosition, SGE);
@@ -152,6 +154,51 @@ void SGE_ModelController::setUseCacheTexture(bool useCache)
 	if(!useCache) removeCacheTexture();
 }
 
+bool SGE_ModelController::getScreenRect(SDL_Rect& rect, bool objectRect)
+{
+	if (!m_options.cacheTexture) return false;
+
+	if (m_cacheTextureNeedsUpdate)
+	{
+		removeCacheTexture();
+		createCacheTexture();
+	}
+
+	if (!m_cacheTexture) return false;
+
+	SGE_Point screenPos = m_options.worldPosition;
+	SGE_PointUtils::worldToScreen(screenPos);
+
+	SDL_Rect dstRect = {
+		m_cacheTextureBounds.x + (int)(screenPos.x + 0.5),
+		m_cacheTextureBounds.y + (int)(screenPos.y + 0.5),
+		m_cacheTextureBounds.w,
+		m_cacheTextureBounds.h
+	};
+
+	if(!objectRect) g_renderer->objectToScreenRect(m_object, dstRect);
+	rect = dstRect;
+
+	return true;
+}
+
+bool SGE_ModelController::isXYInModel(int x, int y, bool objectXY)
+{
+	if (objectXY) {
+		RZUF3_Renderer::objectToScreenXY(m_object, x, y);
+	}
+
+	SDL_Rect rect;
+	if (!getScreenRect(rect, true)) return false;
+
+	RZUF3_Renderer::screenToRectXY(m_object, rect, x, y);
+	if (!RZUF3_Renderer::isXYInside(rect, x, y, true)) return false;
+
+	uint32_t pixel;
+	g_renderer->getPixel(m_cacheTexture, x, y, pixel);
+	return (pixel & 0x000000FF) > 0;
+}
+
 void SGE_ModelController::draw()
 {
 	if (m_bmdFile == nullptr) return;
@@ -172,6 +219,11 @@ void SGE_ModelController::onDraw(RZUF3_DrawEvent* event)
 	SGE_Point screenPos = m_options.worldPosition;
 	SGE_PointUtils::worldToScreen(screenPos);
 	g_sgeWorldDrawQueue->addToQueue(this, m_options.layer, screenPos.z);
+}
+
+void SGE_ModelController::onGetModelController(SGE_GetModelControllerEvent* event)
+{
+	event->setController(this);
 }
 
 void SGE_ModelController::onSetModelInput(SGE_SetModelInputEvent* event)
@@ -335,26 +387,11 @@ void SGE_ModelController::drawNoCache()
 
 void SGE_ModelController::drawFromCache()
 {
-	if (m_cacheTextureNeedsUpdate)
-	{
-		removeCacheTexture();
-		createCacheTexture();
-	}
-
-	if (!m_cacheTexture) return;
+	SDL_Rect dstRect;
+	if(!getScreenRect(dstRect, true)) return;
 
 	g_renderer->setUseObjectPos(true);
 	g_renderer->setAlign(RZUF3_Align_TopLeft);
-
-	SGE_Point screenPos = m_options.worldPosition;
-	SGE_PointUtils::worldToScreen(screenPos);
-
-	SDL_Rect dstRect = {
-		m_cacheTextureBounds.x + (int)(screenPos.x + 0.5),
-		m_cacheTextureBounds.y + (int)(screenPos.y + 0.5),
-		m_cacheTextureBounds.w,
-		m_cacheTextureBounds.h
-	};
 
 	g_renderer->drawTexture(m_object, m_cacheTexture, nullptr, dstRect);
 }

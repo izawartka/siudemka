@@ -38,10 +38,20 @@ public:
 	uint16_t getLayer() const { return m_options.layer; }
 	SGE_Point getPosition() const { return m_options.worldPosition; }
 
+	/* 
+		currently only works for cached models. Also updates cache texture if needed 
+	*/
+	bool getScreenRect(SDL_Rect& rect, bool objectRect = false);
+	/*
+		currently only works for cached models. Also updates cache texture if needed
+	*/
+	bool isXYInModel(int x, int y, bool objectXY = false);
+
 	void draw();
 
 protected:
 	void onDraw(RZUF3_DrawEvent* event);
+	void onGetModelController(SGE_GetModelControllerEvent* event);
 	void onSetModelInput(SGE_SetModelInputEvent* event);
 	void onSetModelAngleInput(SGE_SetModelAngleInputEvent* event);
 	void onSetWorldPosition(SGE_SetWorldPositionEvent* event);
@@ -73,6 +83,7 @@ protected:
 	std::vector<SGE_TextureSetRenderer*> m_submodelRenderers;
 
 	_DECLARE_LISTENER(Draw)
+	_DECLARE_LISTENER(GetModelController)
 	_DECLARE_LISTENER(SetModelInput)
 	_DECLARE_LISTENER(SetModelAngleInput)
 	_DECLARE_LISTENER(SetWorldPosition)
