@@ -16,11 +16,16 @@ void SGE_PointUtils::worldToScreen(SGE_Point& point)
 
 double SGE_PointUtils::getDistance(SGE_Point& p1, SGE_Point& p2)
 {
+	return sqrt(getDistanceSq(p1, p2));
+}
+
+double SGE_PointUtils::getDistanceSq(SGE_Point& p1, SGE_Point& p2)
+{
 	double dx = p2.x - p1.x;
 	double dy = p2.y - p1.y;
 	double dz = p2.z - p1.z;
 
-	return sqrt(dx * dx + dy * dy + dz * dz);
+	return dx * dx + dy * dy + dz * dz;
 }
 
 double SGE_PointUtils::getAngleXY(SGE_Point& p1, SGE_Point& p2)
