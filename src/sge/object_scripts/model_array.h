@@ -21,6 +21,7 @@ struct SGE_ModelArrayOptions {
 	bool centerAtOrigin = true;
 	int layer = 0;
 	bool useDrawQueue = true;
+	bool useSubpixelDrawing = true;
 	SGE_Point worldPosition = { 0, 0, 0 };
 	std::vector<SGE_ModelArrayItemOptions> items;
 };
@@ -61,9 +62,9 @@ protected:
 	void createSubmodelControllers();
 	void removeCacheTexture();
 	void createCacheTexture();
-	void updateSubmodelsForItem(int itemIndex, SDL_Rect& bounds);
+	void updateSubmodelsForItem(int itemIndex, SDL_FRect& bounds);
 	void drawSubmodelsForItem(int itemIndex);
-	void updateSubmodel(int itemIndex, uint16_t submodelIndex, SDL_Rect* rect);
+	void updateSubmodel(int itemIndex, uint16_t submodelIndex, SDL_FRect* rect);
 	void drawSubmodel(uint16_t submodelIndex);
 
 	void setStartBaseRotations();
@@ -80,7 +81,7 @@ protected:
 	std::vector<SGE_ModelArrayItem> m_items;
 	SDL_Texture* m_cacheTexture = nullptr;
 	bool m_cacheTextureNeedsUpdate = true;
-	SDL_Rect m_cacheTextureBounds = { 0, 0, 0, 0 };
+	SDL_FRect m_cacheTextureBounds = { 0, 0, 0, 0 };
 	std::map<std::string, uint16_t> m_inputNames;
 	std::vector<SGE_TextureSetRenderer*> m_submodelRenderers;
 

@@ -44,21 +44,10 @@ void SGE_TextureSetRenderer::draw()
 	if (m_textureDef == nullptr) return;
 	if (m_options.opacity == 0) return;
 
-	SDL_Rect srcRect = getSrcRect();
-
-	SDL_Rect dstRect = {
-		m_options.x + m_textureDef->dstX,
-		m_options.y + m_textureDef->dstY,
-		m_textureDef->width,
-		m_textureDef->height
-	};
-
-	g_renderer->setAlign(m_options.alignment);
-	if (m_options.opacity != 255) {
-		g_renderer->drawTextureOpaque(m_object, m_texture, &srcRect, dstRect, m_options.opacity);
-	}
-	else {
-		g_renderer->drawTexture(m_object, m_texture, &srcRect, dstRect);
+	if (m_options.useSubpixel) {
+		drawSubpixel();
+	} else {
+		drawNonSubpixel();
 	}
 }
 
@@ -77,6 +66,12 @@ void SGE_TextureSetRenderer::setTextureSet(SGE_BMD_TextureSetDef* setDef)
 }
 
 void SGE_TextureSetRenderer::setDstPos(int x, int y)
+{
+	m_options.x = x;
+	m_options.y = y;
+}
+
+void SGE_TextureSetRenderer::setDstPos(float x, float y)
 {
 	m_options.x = x;
 	m_options.y = y;
@@ -117,13 +112,29 @@ void SGE_TextureSetRenderer::getRect(SDL_Rect& rect)
 {
 	if (m_textureDef == nullptr) return;
 
-	rect.x = m_options.x + m_textureDef->dstX;
-	rect.y = m_options.y + m_textureDef->dstY;
+	rect.x = (int)(m_options.x + 0.5f) + m_textureDef->dstX;
+	rect.y = (int)(m_options.y + 0.5f) + m_textureDef->dstY;
+	rect.w = m_textureDef->width;
+	rect.h = m_textureDef->height;
+}
+
+void SGE_TextureSetRenderer::getRect(SDL_FRect& rect)
+{
+	if (m_textureDef == nullptr) return;
+
+	rect.x = m_options.x + (float)m_textureDef->dstX;
+	rect.y = m_options.y + (float)m_textureDef->dstY;
 	rect.w = m_textureDef->width;
 	rect.h = m_textureDef->height;
 }
 
 void SGE_TextureSetRenderer::getPosition(int& x, int& y) const
+{
+	x = (int)(m_options.x + 0.5f);
+	y = (int)(m_options.y + 0.5f);
+}
+
+void SGE_TextureSetRenderer::getPosition(float& x, float& y) const
 {
 	x = m_options.x;
 	y = m_options.y;
@@ -145,6 +156,30 @@ SDL_Rect SGE_TextureSetRenderer::getSrcRect() const
 void SGE_TextureSetRenderer::onDraw(RZUF3_DrawEvent* event)
 {
 	if (m_options.useOnDraw) draw();
+}
+
+void SGE_TextureSetRenderer::drawNonSubpixel()
+{
+	SDL_Rect srcRect = getSrcRect();
+	SDL_Rect dstRect;
+	getRect(dstRect);
+
+	g_renderer->setAlign(m_options.alignment);
+	g_renderer->setOpacity(m_options.opacity);
+	g_renderer->drawTexture(m_object, m_texture, &srcRect, dstRect);
+	g_renderer->resetOpacity();
+}
+
+void SGE_TextureSetRenderer::drawSubpixel()
+{
+	SDL_Rect srcRect = getSrcRect();
+	SDL_FRect dstRect{};
+	getRect(dstRect);
+
+	g_renderer->setAlign(m_options.alignment);
+	g_renderer->setOpacity(m_options.opacity);
+	g_renderer->drawTexture(m_object, m_texture, &srcRect, dstRect);
+	g_renderer->resetOpacity();
 }
 
 void SGE_TextureSetRenderer::removeTexture()

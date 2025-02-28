@@ -15,6 +15,7 @@ struct SGE_ModelControllerOptions {
 	SGE_Point worldPosition = { 0, 0, 0 };
 	bool useDrawQueue = true;
 	bool cacheTexture = true;
+	bool useSubpixelDrawing = true;
 };
 
 class SGE_ModelController : public SGE_DrawQueueScript {
@@ -41,11 +42,11 @@ public:
 	/* 
 		currently only works for cached models. Also updates cache texture if needed 
 	*/
-	bool getScreenRect(SDL_Rect& rect, bool objectRect = false);
+	bool getScreenRect(SDL_FRect& rect, bool objectRect = false);
 	/*
 		currently only works for cached models. Also updates cache texture if needed
 	*/
-	bool isXYInModel(int x, int y, bool objectXY = false);
+	bool isXYInModel(float x, float y, bool objectXY = false);
 
 	void draw();
 
@@ -64,7 +65,7 @@ protected:
 	void createCacheTexture();
 	void drawNoCache();
 	void drawFromCache();
-	void updateSubmodel(uint16_t submodelIndex, SDL_Rect* rect);
+	void updateSubmodel(uint16_t submodelIndex, SDL_FRect* rect);
 	void drawSubmodel(uint16_t submodelIndex, bool forCache);
 
 	void setStartBaseRotation();
@@ -78,7 +79,7 @@ protected:
 	uint16_t* m_inputs = nullptr;
 	SDL_Texture* m_cacheTexture = nullptr;
 	bool m_cacheTextureNeedsUpdate = true;
-	SDL_Rect m_cacheTextureBounds = { 0, 0, 0, 0 };
+	SDL_FRect m_cacheTextureBounds = { 0, 0, 0, 0 };
 	std::map<std::string, uint16_t> m_inputNames;
 	std::vector<SGE_TextureSetRenderer*> m_submodelRenderers;
 

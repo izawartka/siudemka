@@ -12,3 +12,5 @@
 
 #define SGE_INT_MAX ((int)0x7FFFFFFF)
 #define SGE_INT_MIN ((int)0x80000000)
+#define SGE_FLOAT_MAX (3.402823466e+38F)
+#define SGE_FLOAT_MIN (-3.402823466e+38F)

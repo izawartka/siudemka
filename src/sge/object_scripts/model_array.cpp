@@ -195,11 +195,11 @@ void SGE_ModelArray::draw()
 	SGE_Point screenPos = m_options.worldPosition;
 	SGE_PointUtils::worldToScreen(screenPos);
 
-	SDL_Rect dstRect = {
-		m_cacheTextureBounds.x + (int)(screenPos.x + 0.5),
-		m_cacheTextureBounds.y + (int)(screenPos.y + 0.5),
-		m_cacheTextureBounds.w,
-		m_cacheTextureBounds.h
+	SDL_FRect dstRect = {
+		m_cacheTextureBounds.x + (float)screenPos.x,
+		m_cacheTextureBounds.y + (float)screenPos.y,
+		(float)(int)(m_cacheTextureBounds.w + 1.0f),
+		(float)(int)(m_cacheTextureBounds.h + 1.0f)
 	};
 
 	g_renderer->drawTexture(m_object, m_cacheTexture, nullptr, dstRect);
@@ -314,6 +314,7 @@ void SGE_ModelArray::createSubmodelControllers()
 		options.filepath = baseImageFilepath;
 		options.setDef = textureSet;
 		options.useOnDraw = false;
+		options.useSubpixel = m_options.useSubpixelDrawing;
 
 		SGE_TextureSetRenderer* submodelRenderer = new SGE_TextureSetRenderer(options);
 		m_object->addScript(submodelRenderer);
@@ -337,8 +338,8 @@ void SGE_ModelArray::createCacheTexture()
 
 	m_cacheTextureNeedsUpdate = false;
 	m_cacheTextureBounds = { 0, 0, 0, 0 };
-	SDL_Rect& bounds = m_cacheTextureBounds;
-	bounds = { SGE_INT_MAX, SGE_INT_MAX, SGE_INT_MIN, SGE_INT_MIN };
+	SDL_FRect& bounds = m_cacheTextureBounds;
+	bounds = { SGE_FLOAT_MAX, SGE_FLOAT_MAX, SGE_FLOAT_MIN, SGE_FLOAT_MIN };
 
 	for (int i = 0; i < m_items.size(); i++)
 	{
@@ -349,9 +350,12 @@ void SGE_ModelArray::createCacheTexture()
 	bounds.w -= bounds.x;
 	bounds.h -= bounds.y;
 
-	if (bounds.w == 0 || bounds.h == 0) return;
+	if (bounds.w < 0 || bounds.h < 0) return;
 
-	g_renderer->createCacheTexture(m_cacheTexture, bounds.w, bounds.h, [this, bounds]() {
+	int width = (int)(bounds.w + 1.0f);
+	int height = (int)(bounds.h + 1.0f);
+
+	g_renderer->createCacheTexture(m_cacheTexture, width, height, [this, bounds]() {
 		for (int i = 0; i < m_items.size(); i++)
 		{
 			drawSubmodelsForItem(i);
@@ -359,12 +363,12 @@ void SGE_ModelArray::createCacheTexture()
 	});
 }
 
-void SGE_ModelArray::updateSubmodelsForItem(int itemIndex, SDL_Rect& bounds)
+void SGE_ModelArray::updateSubmodelsForItem(int itemIndex, SDL_FRect& bounds)
 {
 	SGE_BMD_ViewDef* view = getCurrentView(itemIndex);
 	if (view == nullptr) return;
 
-	SDL_Rect tempRect{};
+	SDL_FRect tempRect{};
 
 	for (int i = 0; i < view->submodelsCount; i++)
 	{
@@ -394,7 +398,7 @@ void SGE_ModelArray::drawSubmodelsForItem(int itemIndex)
 	}
 }
 
-void SGE_ModelArray::updateSubmodel(int itemIndex, uint16_t submodelIndex, SDL_Rect* rect)
+void SGE_ModelArray::updateSubmodel(int itemIndex, uint16_t submodelIndex, SDL_FRect* rect)
 {
 	SGE_BMD_SubmodelDef* submodel = &m_bmdFile->submodels.submodels[submodelIndex];
 	SGE_TextureSetRenderer* submodelRenderer = m_submodelRenderers[submodelIndex];
@@ -443,8 +447,8 @@ void SGE_ModelArray::updateSubmodel(int itemIndex, uint16_t submodelIndex, SDL_R
 	}
 
 	submodelRenderer->setDstPos(
-		std::round(pos.x),
-		std::round(pos.y)
+		(float)pos.x,
+		(float)pos.y
 	);
 
 	if (rect != nullptr) submodelRenderer->getRect(*rect);
@@ -455,7 +459,7 @@ void SGE_ModelArray::drawSubmodel(uint16_t submodelIndex)
 	SGE_BMD_SubmodelDef* submodel = &m_bmdFile->submodels.submodels[submodelIndex];
 	SGE_TextureSetRenderer* submodelRenderer = m_submodelRenderers[submodelIndex];
 
-	int x, y;
+	float x, y;
 	submodelRenderer->getPosition(x, y);
 
 	x -= m_cacheTextureBounds.x;
