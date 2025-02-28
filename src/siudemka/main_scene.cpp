@@ -18,6 +18,7 @@ RZUF3_SceneDefinition* MainScene::getSceneDef()
     SGE_ModelControllerOptions modelOptions;
     modelOptions.bmdFilepath = MODEL_PATH;
     modelOptions.centerAtOrigin = false;
+    modelOptions.useSubpixelDrawing = false;
 
     RZUF3_ObjectDefinition objModel;
     objModel.name = MODEL_OBJ_NAME;
