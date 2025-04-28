@@ -75,6 +75,6 @@ void InputIfUISoft::onUpdate(RZUF3_UpdateEvent* event)
 	if (m_currentValue < 0) m_currentValue = 0;
 	if (m_currentValue > m_targetValue) m_currentValue = m_targetValue;
 
-	SGE_SetModelInputEvent* setModelInputEvent = new SGE_SetModelInputEvent(m_inputName, m_currentValue);
-	m_targetEventsManager->dispatchEvent(setModelInputEvent);
+	SGE_SetModelInputEvent setModelInputEvent(m_inputName, m_currentValue);
+	m_targetEventsManager->dispatchEvent(&setModelInputEvent);
 }
